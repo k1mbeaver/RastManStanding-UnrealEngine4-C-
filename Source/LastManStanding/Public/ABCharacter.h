@@ -59,7 +59,7 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void Attack();
-	void Run();
+    void Run();
 	void StopRun();
 	int RandomTransform(int min, int max); // ·£´ý ÁÂÇ¥ ±¸ÇÏ±â
 	FVector GiveFVector(); // ·£´ý ÁÂÇ¥ ¼³Á¤
@@ -69,7 +69,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
 	UPROPERTY()
-		float fSprintSpeedMultiPlayer; // ´Þ¸®±â
+        float fSprintSpeedMultiPlayer; // ´Þ¸®±â
 	UPROPERTY()
 		class UABAnimInstance* ABAnim;
 	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))

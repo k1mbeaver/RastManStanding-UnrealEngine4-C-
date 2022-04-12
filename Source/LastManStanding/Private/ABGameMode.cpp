@@ -3,12 +3,13 @@
 
 #include "ABGameMode.h"
 #include "ABCharacter.h"
+#include "ABAIController.h"
 #include "ABPlayerController.h"
 
 /*
-1. 플레이어 컨트롤러의 생성
-2. 플레이어 폰의 생성
-3. 플레이어 컨트롤러가 플레이어 폰을 빙의
+1. 플레이어 컨트롤러의 생성, AI 컨트롤러의 생성
+2. 플레이어 폰의 생성, AI 폰의 생성
+3. 플레이어 컨트롤러가 플레이어 폰을 빙의, AI 컨트롤러가 AI 폰을 빙의
 4. 게임의 시작
 */
 AABGameMode::AABGameMode()
