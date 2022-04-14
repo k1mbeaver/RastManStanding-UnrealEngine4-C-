@@ -173,7 +173,7 @@ void AABCharacter::AttackCheck()
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * AttackRange,
 		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel2,
+		ECollisionChannel::ECC_GameTraceChannel2, // Attack 채널
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
@@ -193,6 +193,7 @@ void AABCharacter::AttackCheck()
 		DrawColor,
 		false,
 		DebugLifeTime);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerPunch!")); // 플레이어가 펀치하는지 확인용
 
 #endif
 
@@ -291,7 +292,7 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		{
 			SetControlMode(EControlMode::Player);
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
-			SetActorLocation(GiveFVector());
+			SetActorLocation(GiveFVector()); // 랜덤배치
 			EnableInput(ABPlayerController);
 		}
 		
@@ -299,7 +300,7 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		{
 			SetControlMode(EControlMode::NPC);
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
-			SetActorLocation(GiveFVector());
+			SetActorLocation(GiveFVector()); // 랜덤배치
 			ABAIController->RunAI();
 		}
 		break;

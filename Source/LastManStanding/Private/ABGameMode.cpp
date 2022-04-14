@@ -5,6 +5,7 @@
 #include "ABCharacter.h"
 #include "ABAIController.h"
 #include "ABPlayerController.h"
+#include "GameMain_HUD.h"
 
 /*
 1. 플레이어 컨트롤러의 생성, AI 컨트롤러의 생성
@@ -16,6 +17,7 @@ AABGameMode::AABGameMode()
 {
 	DefaultPawnClass = AABCharacter::StaticClass();
 	PlayerControllerClass = AABPlayerController::StaticClass();
+	HUDClass = AGameMain_HUD::StaticClass();
 }
 
 void AABGameMode::PostLogin(APlayerController* NewPlayer)

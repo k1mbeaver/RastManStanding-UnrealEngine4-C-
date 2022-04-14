@@ -13,8 +13,8 @@ DECLARE_LOG_CATEGORY_EXTERN(LastManStanding, Log, All);
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
-	PREINIT, // 캐릭터 생성 전의 스테이트, 
-	LOADING, // 선택한 캐릭터 애셋을 로딩
+	//PREINIT, // 캐릭터 생성 전의 스테이트, 
+	//LOADING, // 선택한 캐릭터 애셋을 로딩
 	READY, // 준비가 완료, 평상 시의 상태 (플레이어, AI)
 	DEAD // Death, 플레이어는 자유 시점 카메라, AI는 비헤이비어 트리 구동을 멈춤
 };

@@ -3,6 +3,7 @@
 
 #include "Title_PC.h"
 #include "UW_Title.h"
+#include "Kismet/GameplayStatics.h"
 
 ATitle_PC::ATitle_PC()
 {
@@ -30,4 +31,14 @@ void ATitle_PC::BeginPlay()
 			TitleUIObject->SetVisibility(ESlateVisibility::Visible);
 			TitleUIObject->StartAnim();
 		}), 1.0f, false);
+}
+
+void ATitle_PC::CreateServer()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName("ThirdPersonExampleMap"), true, ((FString)("Listen")));
+}
+
+void ATitle_PC::JoinServer()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName("203.232.193.171")); // Level 이름 대신 IP 주소
 }

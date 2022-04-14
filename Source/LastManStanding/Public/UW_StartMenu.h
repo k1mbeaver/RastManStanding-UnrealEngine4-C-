@@ -17,8 +17,19 @@ class LASTMANSTANDING_API UUW_StartMenu : public UUserWidget
 private:
 	UPROPERTY(Meta = (BindWidgetAnim), Transient)
 		class UWidgetAnimation* ShowUp;
+	UPROPERTY(Meta = (BindWidget))
+		class UButton* CreateServerBtn;
+	UPROPERTY(Meta = (BindWidget))
+		class UButton* JoinServerBtn;
 
 public:
 	void ShowUpAnim();
 	
+	
+	UFUNCTION()
+		void CreateServerHandler();
+	UFUNCTION()
+		void JoinServerHandler();
+	
+	virtual void NativeConstruct() override;
 };

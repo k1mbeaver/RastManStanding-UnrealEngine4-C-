@@ -22,4 +22,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 		TSubclassOf<class UUW_Title> TitleUIClass;
 	class UUW_Title* TitleUIObject;
+	void CreateServer();
+	void JoinServer();
 };
