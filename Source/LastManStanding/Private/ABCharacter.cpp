@@ -295,7 +295,7 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 			SetActorLocation(GiveFVector()); // 랜덤배치
 			EnableInput(ABPlayerController);
 		}
-		
+
 		else // AI일 경우
 		{
 			SetControlMode(EControlMode::NPC);

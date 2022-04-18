@@ -7,7 +7,7 @@
 #include "ABPlayerController.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class LASTMANSTANDING_API AABPlayerController : public APlayerController

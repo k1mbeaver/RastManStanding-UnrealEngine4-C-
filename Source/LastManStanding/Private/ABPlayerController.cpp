@@ -43,7 +43,7 @@ void AABPlayerController::SendMessage(const FText& Text)
 		//FString UserName = MyGI->GetUserName(); 이것도
 		//FString Message = FString::Printf(TEXT("%s : %s"), *UserName, *Text.ToString());
 
-	    //CtoS_SendMessage(Message); // 서버에서 실행될 수 있도록 보낸다.
+		//CtoS_SendMessage(Message); // 서버에서 실행될 수 있도록 보낸다.
 //   }
 	FString Message = FString::Printf(TEXT("%s"), *Text.ToString());
 
