@@ -31,4 +31,8 @@ private:
 		void CtoS_SendMessage(const FString& Message);
 	UFUNCTION(Client, Unreliable)
 		void StoC_SendMessage(const FString& Message);
+	UPROPERTY()
+		class AABCharacter* ABCharacter;
+	UPROPERTY()
+		class UABAnimInstance* ABAnimInstance;
 };

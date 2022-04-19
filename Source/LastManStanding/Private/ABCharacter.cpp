@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "ABAIController.h"
 #include "ABPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include <random>
 
 // Sets default values
@@ -87,7 +88,6 @@ void AABCharacter::BeginPlay()
 		ABAIController = Cast<AABAIController>(GetController());
 		ABCHECK(nullptr != ABAIController);
 	}
-
 	SetCharacterState(ECharacterState::READY);
 }
 
@@ -133,23 +133,28 @@ void AABCharacter::Turn(float NewAxisValue)
 	AddControllerYawInput(NewAxisValue);
 }
 
-void AABCharacter::Attack()
+void AABCharacter::Attack_Implementation()
 {
 	if (IsAttacking) return;
 
 	ABAnim->PlayAttackMontage();
 
 	IsAttacking = true;
+
+	MyAttack.Broadcast();
 }
 
-void AABCharacter::Run()
+
+void AABCharacter::Run_Implementation()
 {
 	GetCharacterMovement()->MaxWalkSpeed *= fSprintSpeedMultiPlayer;
+	MyRun.Broadcast();
 }
 
-void AABCharacter::StopRun()
+void AABCharacter::StopRun_Implementation()
 {
 	GetCharacterMovement()->MaxWalkSpeed /= fSprintSpeedMultiPlayer;
+	MyStopRun.Broadcast();
 }
 
 /*
@@ -164,7 +169,7 @@ void AABCharacter::EndCrouch()
 }
 */
 
-void AABCharacter::AttackCheck()
+void AABCharacter::AttackCheck_Implementation()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
@@ -207,6 +212,8 @@ void AABCharacter::AttackCheck()
 			HitResult.Actor->TakeDamage(100.0f, DamageEvent, GetController(), this);
 		}
 	}
+
+	MyAttackCheck.Broadcast();
 }
 
 void AABCharacter::SetControlMode(EControlMode NewControlMode)
@@ -240,21 +247,28 @@ void AABCharacter::SetControlMode(EControlMode NewControlMode)
 	}
 }
 
+// possess된 시점 만약 안되면 이 함수 all 주석 처리
 /*
 void AABCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
+	ABPlayerController = Cast<AABPlayerController>(NewController);
 	if (IsPlayerControlled())
 	{
 		SetControlMode(EControlMode::Player);
+		CurrentState = ECharacterState::READY;
 		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		SetActorLocation(GiveFVector()); // 랜덤배치
+		EnableInput(ABPlayerController);
 	}
 
 	else
 	{
 		SetControlMode(EControlMode::NPC);
+		CurrentState = ECharacterState::READY;
 		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		SetActorLocation(GiveFVector()); // 랜덤배치
+		ABAIController->RunAI();
 	}
 }
 */
@@ -270,12 +284,14 @@ float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
 
-	if (FinalDamage > 0.0f)
+	if (FinalDamage > 0.0f) // 일단 맞으면 기절
 	{
 		ABAnim->SetDeadAnim();
-		SetActorEnableCollision(false);
+		//SetActorEnableCollision(false);
 		SetCharacterState(ECharacterState::DEAD); // 사망처리
 	}
+
+	MyTakeDamage.Broadcast();
 	return FinalDamage;
 }
 
@@ -342,4 +358,11 @@ FVector AABCharacter::GiveFVector()
 	nDestinationY = RandomTransform(-2850, 2850);
 
 	return FVector(nDestinationX, nDestinationY, 218);
+}
+
+void AABCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AABCharacter, fSprintSpeedMultiPlayer);
 }

@@ -3,6 +3,8 @@
 
 #include "ABPlayerController.h"
 #include "GameMain_HUD.h"
+#include "ABAnimInstance.h"
+#include "ABCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 void AABPlayerController::PostInitializeComponents()
@@ -30,8 +32,8 @@ void AABPlayerController::SetupInputComponent()
 
 	// 액션 키 바인딩
 	InputComponent->BindAction(TEXT("Chat"), EInputEvent::IE_Pressed, this, &AABPlayerController::FocusChatInputText);
-
 }
+
 
 void AABPlayerController::SendMessage(const FText& Text)
 {
@@ -66,6 +68,7 @@ void AABPlayerController::FocusGame()
 	SetInputMode(FInputModeGameOnly());
 }
 
+// 채팅(서버)
 
 void AABPlayerController::CtoS_SendMessage_Implementation(const FString& Message)
 {
@@ -90,3 +93,5 @@ void AABPlayerController::StoC_SendMessage_Implementation(const FString& Message
 
 	HUD->AddChatMessage(Message);
 }
+
+// 공격(서버)

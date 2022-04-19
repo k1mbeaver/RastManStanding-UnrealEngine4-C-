@@ -4,7 +4,14 @@
 
 #include "LastManStanding.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 #include "ABCharacter.generated.h"
+
+DECLARE_MULTICAST_DELEGATE(FMyAttack_Delegate); // 공격 알림
+DECLARE_MULTICAST_DELEGATE(FMyTakeDamage_Delegate); // 데미지 알림
+DECLARE_MULTICAST_DELEGATE(FMyRun_Delegate); // 달리기 알림
+DECLARE_MULTICAST_DELEGATE(FMyStopRun_Delegate); // 달리기 멈춤 알림
+DECLARE_MULTICAST_DELEGATE(FMyAttackCheck_Delegate); // 공격 체크 알림
 
 UCLASS()
 class LASTMANSTANDING_API AABCharacter : public ACharacter
@@ -53,14 +60,13 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		float AttackRadius;
 
+	FMyAttack_Delegate MyAttack;
+	FMyTakeDamage_Delegate MyTakeDamage;
+	FMyRun_Delegate MyRun;
+	FMyStopRun_Delegate MyStopRun;
+	FMyAttackCheck_Delegate MyAttackCheck;
+
 private:
-	void UpDown(float NewAxisValue);
-	void LeftRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
-	void Attack();
-    void Run();
-	void StopRun();
 	int RandomTransform(int min, int max); // 랜덤 좌표 구하기
 	FVector GiveFVector(); // 랜덤 좌표 설정
 
@@ -68,7 +74,7 @@ private:
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
         float fSprintSpeedMultiPlayer; // 달리기
 	UPROPERTY()
 		class UABAnimInstance* ABAnim;
@@ -80,6 +86,17 @@ private:
 		class AABAIController* ABAIController;
 	UPROPERTY()
 		class AABPlayerController* ABPlayerController;
+	void UpDown(float NewAxisValue);
+	void LeftRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
+	UFUNCTION(NetMulticast, Reliable)
+		void Attack();
+	UFUNCTION(NetMulticast, Reliable)
+		void Run();
+	UFUNCTION(NetMulticast, Reliable)
+		void StopRun();
+	UFUNCTION(NetMulticast, Reliable)
+		void AttackCheck();
 
-	void AttackCheck();
 };
