@@ -95,3 +95,29 @@ void AABPlayerController::StoC_SendMessage_Implementation(const FString& Message
 }
 
 // 공격(서버)
+/*
+void AABPlayerController::CtoS_Attack_Implementation()
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_Attack();
+		}
+	}
+}
+
+void AABPlayerController::StoC_Attack_Implementation()
+{
+	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
+	APawn* MyPawn = GetPawn();
+	AABCharacter* MyCharacter = Cast<AABCharacter>(MyPawn);
+	if (MyCharacter == nullptr) return;
+
+	MyCharacter->AttackCheck();
+}
+*/

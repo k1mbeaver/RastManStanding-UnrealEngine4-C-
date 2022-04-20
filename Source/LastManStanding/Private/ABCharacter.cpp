@@ -148,12 +148,14 @@ void AABCharacter::Attack_Implementation()
 void AABCharacter::Run_Implementation()
 {
 	GetCharacterMovement()->MaxWalkSpeed *= fSprintSpeedMultiPlayer;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
 	MyRun.Broadcast();
 }
 
 void AABCharacter::StopRun_Implementation()
 {
 	GetCharacterMovement()->MaxWalkSpeed /= fSprintSpeedMultiPlayer;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
 	MyStopRun.Broadcast();
 }
 

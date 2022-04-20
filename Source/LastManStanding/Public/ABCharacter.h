@@ -91,12 +91,13 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	UFUNCTION(NetMulticast, Reliable)
-		void Attack();
-	UFUNCTION(NetMulticast, Reliable)
 		void Run();
 	UFUNCTION(NetMulticast, Reliable)
 		void StopRun();
 	UFUNCTION(NetMulticast, Reliable)
 		void AttackCheck();
+	UFUNCTION(NetMulticast, Reliable)
+		void Attack();
+
 
 };

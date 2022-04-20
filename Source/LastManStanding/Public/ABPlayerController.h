@@ -31,6 +31,10 @@ private:
 		void CtoS_SendMessage(const FString& Message);
 	UFUNCTION(Client, Unreliable)
 		void StoC_SendMessage(const FString& Message);
+	//UFUNCTION(Server, Unreliable)
+	//	void CtoS_Attack();
+	//UFUNCTION(Client, Unreliable)
+	//	void StoC_Attack();
 	UPROPERTY()
 		class AABCharacter* ABCharacter;
 	UPROPERTY()
