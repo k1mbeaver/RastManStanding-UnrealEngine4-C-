@@ -103,16 +103,17 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AABCharacter::UpDown);
-	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AABCharacter::LeftRight);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AABCharacter::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AABCharacter::Turn);
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AABCharacter::Attack);
-	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AABCharacter::Run);
-	PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AABCharacter::StopRun);
+	//PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AABCharacter::UpDown);
+	//PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AABCharacter::LeftRight);
+	//PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AABCharacter::LookUp);
+	//PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AABCharacter::Turn);
+	//PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	//PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AABCharacter::Attack);
+	//PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AABCharacter::Run);
+	//PlayerInputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AABCharacter::StopRun);
 }
 
+/*
 void AABCharacter::UpDown(float NewAxisValue)
 {
 	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
@@ -133,7 +134,7 @@ void AABCharacter::Turn(float NewAxisValue)
 	AddControllerYawInput(NewAxisValue);
 }
 
-void AABCharacter::Attack_Implementation()
+void AABCharacter::Attack()
 {
 	if (IsAttacking) return;
 
@@ -141,25 +142,25 @@ void AABCharacter::Attack_Implementation()
 
 	IsAttacking = true;
 
-	MyAttack.Broadcast();
+	//MyAttack.Broadcast();
 }
 
 
-void AABCharacter::Run_Implementation()
+void AABCharacter::Run()
 {
 	GetCharacterMovement()->MaxWalkSpeed *= fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
-	MyRun.Broadcast();
+	//MyRun.Broadcast();
 }
 
-void AABCharacter::StopRun_Implementation()
+void AABCharacter::StopRun()
 {
 	GetCharacterMovement()->MaxWalkSpeed /= fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
-	MyStopRun.Broadcast();
+	//MyStopRun.Broadcast();
 }
 
-/*
+
 void AABCharacter::BeginCrouch()
 {
 	this->Crouch();
@@ -171,7 +172,7 @@ void AABCharacter::EndCrouch()
 }
 */
 
-void AABCharacter::AttackCheck_Implementation()
+void AABCharacter::AttackCheck()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
@@ -215,7 +216,7 @@ void AABCharacter::AttackCheck_Implementation()
 		}
 	}
 
-	MyAttackCheck.Broadcast();
+	//MyAttackCheck.Broadcast();
 }
 
 void AABCharacter::SetControlMode(EControlMode NewControlMode)
@@ -293,7 +294,7 @@ float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 		SetCharacterState(ECharacterState::DEAD); // ªÁ∏¡√≥∏Æ
 	}
 
-	MyTakeDamage.Broadcast();
+	//MyTakeDamage.Broadcast();
 	return FinalDamage;
 }
 

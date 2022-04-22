@@ -60,6 +60,15 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		float AttackRadius;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		bool IsAttacking;
+
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
+		float fSprintSpeedMultiPlayer; // 달리기
+
+	UPROPERTY()
+		class UABAnimInstance* ABAnim;
+
 	FMyAttack_Delegate MyAttack;
 	FMyTakeDamage_Delegate MyTakeDamage;
 	FMyRun_Delegate MyRun;
@@ -72,12 +81,6 @@ private:
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		bool IsAttacking;
-	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
-        float fSprintSpeedMultiPlayer; // 달리기
-	UPROPERTY()
-		class UABAnimInstance* ABAnim;
 	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 		ECharacterState CurrentState;
 	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
@@ -86,18 +89,18 @@ private:
 		class AABAIController* ABAIController;
 	UPROPERTY()
 		class AABPlayerController* ABPlayerController;
-	void UpDown(float NewAxisValue);
-	void LeftRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
-	UFUNCTION(NetMulticast, Reliable)
-		void Run();
-	UFUNCTION(NetMulticast, Reliable)
-		void StopRun();
-	UFUNCTION(NetMulticast, Reliable)
-		void AttackCheck();
-	UFUNCTION(NetMulticast, Reliable)
-		void Attack();
+	//void UpDown(float NewAxisValue);
+	//void LeftRight(float NewAxisValue);
+	//void LookUp(float NewAxisValue);
+	//void Turn(float NewAxisValue);
+	//UFUNCTION(NetMulticast, Reliable)
+	//void Run();
+	//UFUNCTION(NetMulticast, Reliable)
+	//void StopRun();
+	//UFUNCTION(NetMulticast, Reliable)
+	void AttackCheck();
+	//UFUNCTION(NetMulticast, Reliable)
+	//void Attack();
 
 
 };

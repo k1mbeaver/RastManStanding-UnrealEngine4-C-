@@ -18,6 +18,7 @@ public:
 	virtual void SetupInputComponent() override;
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void BeginPlay() override;
+
 	void SendMessage(const FText& Text);
 
 	UFUNCTION()
@@ -36,7 +37,21 @@ private:
 	//UFUNCTION(Client, Unreliable)
 	//	void StoC_Attack();
 	UPROPERTY()
-		class AABCharacter* ABCharacter;
-	UPROPERTY()
 		class UABAnimInstance* ABAnimInstance;
+	UPROPERTY(VisibleInstanceOnly, Replicated)
+		class AABCharacter* ABCharacter;
+	UPROPERTY(VisibleInstanceOnly, Replicated)
+		class APawn* ABPawn;
+	void UpDown(float NewAxisValue);
+	void LeftRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
+	void Jump();
+	void Run();
+	//UFUNCTION(NetMulticast, Reliable)
+	void StopRun();
+	//UFUNCTION(NetMulticast, Reliable)
+	void AttackCheck();
+	//UFUNCTION(NetMulticast, Reliable)
+	void Attack();
 };

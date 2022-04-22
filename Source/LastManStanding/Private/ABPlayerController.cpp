@@ -15,6 +15,8 @@ void AABPlayerController::PostInitializeComponents()
 void AABPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
+
+	ABPawn = aPawn;
 }
 
 void AABPlayerController::BeginPlay()
@@ -30,10 +32,101 @@ void AABPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	// 액션 키 바인딩
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+
+	// 키 바인딩
+
 	InputComponent->BindAction(TEXT("Chat"), EInputEvent::IE_Pressed, this, &AABPlayerController::FocusChatInputText);
+
+	// 움직임
+
+	InputComponent->BindAxis(TEXT("UpDown"), this, &AABPlayerController::UpDown);
+	InputComponent->BindAxis(TEXT("LeftRight"), this, &AABPlayerController::LeftRight);
+	InputComponent->BindAxis(TEXT("LookUp"), this, &AABPlayerController::LookUp);
+	InputComponent->BindAxis(TEXT("Turn"), this, &AABPlayerController::Turn);
+
+	// 액션
+
+	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AABPlayerController::Jump);
+	InputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AABPlayerController::Attack);
+	InputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AABPlayerController::Run);
+	InputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AABPlayerController::StopRun);
 }
 
+// 움직임 함수
+
+void AABPlayerController::UpDown(float NewAxisValue)
+{
+	//APawn* const myPawn = GetPawn();
+	ABPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
+}
+
+void AABPlayerController::LeftRight(float NewAxisValue)
+{
+	//APawn* const myPawn = GetPawn();
+	ABPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+}
+
+
+void AABPlayerController::LookUp(float NewAxisValue)
+{
+	//APawn* const myPawn = GetPawn();
+	ABPawn->AddControllerPitchInput(NewAxisValue);
+}
+
+void AABPlayerController::Turn(float NewAxisValue)
+{
+	//APawn* const myPawn = GetPawn();
+	ABPawn->AddControllerYawInput(NewAxisValue);
+}
+
+// 액션 함수
+
+void AABPlayerController::Jump()
+{
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	ABCharacter = Cast <AABCharacter>(ABPawn);
+	ABCharacter->bPressedJump = true;
+	ABCharacter->JumpKeyHoldTime = 0.0f;
+}
+
+void AABPlayerController::Attack()
+{
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	ABCharacter = Cast <AABCharacter>(ABPawn);
+	if (ABCharacter->IsAttacking) return;
+
+	ABCharacter->ABAnim->PlayAttackMontage();
+
+	ABCharacter->IsAttacking = true;
+
+	//MyAttack.Broadcast();
+}
+
+
+void AABPlayerController::Run()
+{
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	ABCharacter = Cast <AABCharacter>(ABPawn);
+	ABCharacter->GetCharacterMovement()->MaxWalkSpeed *= ABCharacter->fSprintSpeedMultiPlayer;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
+	//MyRun.Broadcast();
+}
+
+void AABPlayerController::StopRun()
+{
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	ABCharacter = Cast <AABCharacter>(ABPawn);
+	ABCharacter->GetCharacterMovement()->MaxWalkSpeed /= ABCharacter->fSprintSpeedMultiPlayer;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
+	//MyStopRun.Broadcast();
+}
+
+// 채팅
 
 void AABPlayerController::SendMessage(const FText& Text)
 {
@@ -121,3 +214,13 @@ void AABPlayerController::StoC_Attack_Implementation()
 	MyCharacter->AttackCheck();
 }
 */
+
+// 리플리케이트
+
+void AABPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AABPlayerController, ABCharacter);
+	DOREPLIFETIME(AABPlayerController, ABPawn);
+}
