@@ -47,7 +47,7 @@ AABCharacter::AABCharacter()
 
 	AttackRange = 50.0f;
 	AttackRadius = 25.0f;
-	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
+	//fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
 
 	AIControllerClass = AABAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -77,6 +77,7 @@ void AABCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	bIsPlayer = IsPlayerControlled();
+
 	if (bIsPlayer)
 	{
 		ABPlayerController = Cast<AABPlayerController>(GetController());
@@ -256,6 +257,7 @@ void AABCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	ABPlayerController = Cast<AABPlayerController>(NewController);
+	
 	if (IsPlayerControlled())
 	{
 		SetControlMode(EControlMode::Player);
@@ -273,6 +275,7 @@ void AABCharacter::PossessedBy(AController* NewController)
 		SetActorLocation(GiveFVector()); // 랜덤배치
 		ABAIController->RunAI();
 	}
+	
 }
 */
 
@@ -363,9 +366,11 @@ FVector AABCharacter::GiveFVector()
 	return FVector(nDestinationX, nDestinationY, 218);
 }
 
+/*
 void AABCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AABCharacter, fSprintSpeedMultiPlayer);
 }
+*/

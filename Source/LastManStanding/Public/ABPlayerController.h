@@ -13,6 +13,8 @@ UCLASS()
 class LASTMANSTANDING_API AABPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+		AABPlayerController();
 public:
 	virtual void PostInitializeComponents() override;
 	virtual void SetupInputComponent() override;
@@ -23,8 +25,12 @@ public:
 
 	UFUNCTION()
 		void FocusChatInputText();
+
 	UFUNCTION()
 		void FocusGame();
+
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
+		float fSprintSpeedMultiPlayer; // ´Þ¸®±â
 protected:
 
 private:

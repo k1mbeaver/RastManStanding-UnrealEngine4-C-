@@ -7,6 +7,11 @@
 #include "ABCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
+AABPlayerController::AABPlayerController()
+{
+	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
+}
+
 void AABPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -111,7 +116,7 @@ void AABPlayerController::Run()
 	//APawn* const myPawn = GetPawn();
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 	ABCharacter = Cast <AABCharacter>(ABPawn);
-	ABCharacter->GetCharacterMovement()->MaxWalkSpeed *= ABCharacter->fSprintSpeedMultiPlayer;
+	ABCharacter->GetCharacterMovement()->MaxWalkSpeed *= fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
 	//MyRun.Broadcast();
 }
@@ -121,7 +126,7 @@ void AABPlayerController::StopRun()
 	//APawn* const myPawn = GetPawn();
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 	ABCharacter = Cast <AABCharacter>(ABPawn);
-	ABCharacter->GetCharacterMovement()->MaxWalkSpeed /= ABCharacter->fSprintSpeedMultiPlayer;
+	ABCharacter->GetCharacterMovement()->MaxWalkSpeed /= fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
 	//MyStopRun.Broadcast();
 }

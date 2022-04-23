@@ -63,8 +63,8 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
 
-	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
-		float fSprintSpeedMultiPlayer; // 달리기
+	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
+		//float fSprintSpeedMultiPlayer; // 달리기
 
 	UPROPERTY()
 		class UABAnimInstance* ABAnim;
