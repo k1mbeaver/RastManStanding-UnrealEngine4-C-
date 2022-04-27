@@ -89,10 +89,10 @@ private:
 		class AABAIController* ABAIController;
 	UPROPERTY()
 		class AABPlayerController* ABPlayerController;
-	//void UpDown(float NewAxisValue);
-	//void LeftRight(float NewAxisValue);
-	//void LookUp(float NewAxisValue);
-	//void Turn(float NewAxisValue);
+	void UpDown(float NewAxisValue);
+	void LeftRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
 	//UFUNCTION(NetMulticast, Reliable)
 	//void Run();
 	//UFUNCTION(NetMulticast, Reliable)

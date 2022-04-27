@@ -18,6 +18,7 @@ AABGameMode::AABGameMode()
 	DefaultPawnClass = AABCharacter::StaticClass();
 	PlayerControllerClass = AABPlayerController::StaticClass();
 	HUDClass = AGameMain_HUD::StaticClass();
+
 }
 
 void AABGameMode::PostLogin(APlayerController* NewPlayer)

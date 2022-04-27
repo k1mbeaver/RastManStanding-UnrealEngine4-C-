@@ -6,6 +6,7 @@
 #include "ABAnimInstance.h"
 #include "ABCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AABPlayerController::AABPlayerController()
 {
@@ -20,8 +21,6 @@ void AABPlayerController::PostInitializeComponents()
 void AABPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
-
-	ABPawn = aPawn;
 }
 
 void AABPlayerController::BeginPlay()
@@ -45,10 +44,10 @@ void AABPlayerController::SetupInputComponent()
 
 	// 움직임
 
-	InputComponent->BindAxis(TEXT("UpDown"), this, &AABPlayerController::UpDown);
-	InputComponent->BindAxis(TEXT("LeftRight"), this, &AABPlayerController::LeftRight);
-	InputComponent->BindAxis(TEXT("LookUp"), this, &AABPlayerController::LookUp);
-	InputComponent->BindAxis(TEXT("Turn"), this, &AABPlayerController::Turn);
+	//InputComponent->BindAxis(TEXT("UpDown"), this, &AABPlayerController::UpDown);
+	//InputComponent->BindAxis(TEXT("LeftRight"), this, &AABPlayerController::LeftRight);
+	//InputComponent->BindAxis(TEXT("LookUp"), this, &AABPlayerController::LookUp);
+	//InputComponent->BindAxis(TEXT("Turn"), this, &AABPlayerController::Turn);
 
 	// 액션
 
@@ -59,53 +58,57 @@ void AABPlayerController::SetupInputComponent()
 }
 
 // 움직임 함수
-
+/*
 void AABPlayerController::UpDown(float NewAxisValue)
 {
-	//APawn* const myPawn = GetPawn();
-	ABPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
+	APawn* const myPawn = GetPawn();
+	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//myPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void AABPlayerController::LeftRight(float NewAxisValue)
 {
-	//APawn* const myPawn = GetPawn();
-	ABPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+	APawn* const myPawn = GetPawn();
+	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//myPawn->AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
 
 
 void AABPlayerController::LookUp(float NewAxisValue)
 {
-	//APawn* const myPawn = GetPawn();
-	ABPawn->AddControllerPitchInput(NewAxisValue);
+	APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//myPawn->AddControllerPitchInput(NewAxisValue);
 }
 
 void AABPlayerController::Turn(float NewAxisValue)
 {
-	//APawn* const myPawn = GetPawn();
-	ABPawn->AddControllerYawInput(NewAxisValue);
+	APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//myPawn->AddControllerYawInput(NewAxisValue);
 }
-
+*/
 // 액션 함수
 
 void AABPlayerController::Jump()
 {
-	//APawn* const myPawn = GetPawn();
-	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	ABCharacter = Cast <AABCharacter>(ABPawn);
-	ABCharacter->bPressedJump = true;
-	ABCharacter->JumpKeyHoldTime = 0.0f;
+	APawn* const myPawn = GetPawn();
+	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//ABCharacter = Cast <AABCharacter>(ABPawn);
+	myCharacter->bPressedJump = true;
+	myCharacter->JumpKeyHoldTime = 0.0f;
 }
 
 void AABPlayerController::Attack()
 {
-	//APawn* const myPawn = GetPawn();
-	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	ABCharacter = Cast <AABCharacter>(ABPawn);
-	if (ABCharacter->IsAttacking) return;
+	APawn* const myPawn = GetPawn();
+	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//ABCharacter = Cast <AABCharacter>(ABPawn);
+	if (myCharacter->IsAttacking) return;
 
-	ABCharacter->ABAnim->PlayAttackMontage();
+	myCharacter->ABAnim->PlayAttackMontage();
 
-	ABCharacter->IsAttacking = true;
+	myCharacter->IsAttacking = true;
 
 	//MyAttack.Broadcast();
 }
@@ -113,20 +116,20 @@ void AABPlayerController::Attack()
 
 void AABPlayerController::Run()
 {
-	//APawn* const myPawn = GetPawn();
-	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	ABCharacter = Cast <AABCharacter>(ABPawn);
-	ABCharacter->GetCharacterMovement()->MaxWalkSpeed *= fSprintSpeedMultiPlayer;
+	APawn* const myPawn = GetPawn();
+	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//ABCharacter = Cast <AABCharacter>(ABPawn);
+	myCharacter->GetCharacterMovement()->MaxWalkSpeed *= fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
 	//MyRun.Broadcast();
 }
 
 void AABPlayerController::StopRun()
 {
-	//APawn* const myPawn = GetPawn();
-	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	ABCharacter = Cast <AABCharacter>(ABPawn);
-	ABCharacter->GetCharacterMovement()->MaxWalkSpeed /= fSprintSpeedMultiPlayer;
+	APawn* const myPawn = GetPawn();
+	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//ABCharacter = Cast <AABCharacter>(ABPawn);
+	myCharacter->GetCharacterMovement()->MaxWalkSpeed /= fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
 	//MyStopRun.Broadcast();
 }

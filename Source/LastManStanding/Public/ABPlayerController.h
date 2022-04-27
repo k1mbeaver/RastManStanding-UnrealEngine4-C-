@@ -48,10 +48,10 @@ private:
 		class AABCharacter* ABCharacter;
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 		class APawn* ABPawn;
-	void UpDown(float NewAxisValue);
-	void LeftRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
+	//void UpDown(float NewAxisValue);
+	//void LeftRight(float NewAxisValue);
+	//void LookUp(float NewAxisValue);
+	//void Turn(float NewAxisValue);
 	void Jump();
 	void Run();
 	//UFUNCTION(NetMulticast, Reliable)
