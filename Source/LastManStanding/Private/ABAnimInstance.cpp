@@ -35,10 +35,16 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UABAnimInstance::PlayAttackMontage()
+void UABAnimInstance::PlayAttackMontage(UAnimMontage* playPunch)
 {
 	ABCHECK(!IsDead);
-	Montage_Play(AttackMontage, 1.0f);
+	Montage_Play(playPunch, 1.0f);
+	PunchAnimation_Punch.Broadcast();
+}
+
+UAnimMontage* UABAnimInstance::GetAttackMontage()
+{
+	return AttackMontage;
 }
 
 void UABAnimInstance::AnimNotify_OnCollisonStart_Punch()
@@ -51,6 +57,11 @@ void UABAnimInstance::AnimNotify_OnCollisonEnd_Punch()
 {
 	ABLOG_S(Warning);
 	OnOnCollisonEnd_Punch.Broadcast();
+}
+
+void UABAnimInstance::SetDeadAnim()
+{
+	IsDead = true;
 }
 
 FName UABAnimInstance::GetAttackMontageSectionName(int32 Section)

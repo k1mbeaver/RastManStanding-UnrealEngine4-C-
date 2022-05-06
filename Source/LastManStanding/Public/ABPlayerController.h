@@ -29,8 +29,10 @@ public:
 	UFUNCTION()
 		void FocusGame();
 
-	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
-		float fSprintSpeedMultiPlayer; // 달리기
+	//float testkey = 0;
+
+	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
+		//float fSprintSpeedMultiPlayer; // 달리기
 protected:
 
 private:
@@ -38,10 +40,10 @@ private:
 		void CtoS_SendMessage(const FString& Message);
 	UFUNCTION(Client, Unreliable)
 		void StoC_SendMessage(const FString& Message);
-	//UFUNCTION(Server, Unreliable)
-	//	void CtoS_Attack();
-	//UFUNCTION(Client, Unreliable)
-	//	void StoC_Attack();
+	//UFUNCTION(Server, Reliable)
+		//void CtoS_Attack();
+	//UFUNCTION(Client, Reliable)
+		//void StoC_Attack();
 	UPROPERTY()
 		class UABAnimInstance* ABAnimInstance;
 	UPROPERTY(VisibleInstanceOnly, Replicated)
@@ -53,11 +55,36 @@ private:
 	//void LookUp(float NewAxisValue);
 	//void Turn(float NewAxisValue);
 	void Jump();
+
+	// 달리기 함수
+
+	UFUNCTION(Server, Reliable)
+		void CtoS_Run(AABCharacter* ClientCharacter);
+
+	UFUNCTION(Client, Reliable)
+		void StoC_Run(AABCharacter* ClientCharacter);
+
 	void Run();
-	//UFUNCTION(NetMulticast, Reliable)
+
+	UFUNCTION(Server, Reliable)
+		void CtoS_StopRun(AABCharacter* ClientCharacter);
+
+	UFUNCTION(Client, Reliable)
+		void StoC_StopRun(AABCharacter* ClientCharacter);
+
 	void StopRun();
+
 	//UFUNCTION(NetMulticast, Reliable)
-	void AttackCheck();
+	//void AttackCheck();
 	//UFUNCTION(NetMulticast, Reliable)
+	
+	// 공격 함수
+
+	UFUNCTION(Server, Reliable)
+		void CtoS_Attack(AABCharacter* ClientCharacter, UAnimMontage* playPunch);
+
+	UFUNCTION(Client, Reliable)
+		void StoC_Attack(AABCharacter* ClientCharacter, UAnimMontage* playPunch);
+
 	void Attack();
 };

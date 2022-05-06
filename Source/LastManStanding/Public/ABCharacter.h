@@ -7,11 +7,11 @@
 #include "Net/UnrealNetwork.h"
 #include "ABCharacter.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FMyAttack_Delegate); // 공격 알림
-DECLARE_MULTICAST_DELEGATE(FMyTakeDamage_Delegate); // 데미지 알림
-DECLARE_MULTICAST_DELEGATE(FMyRun_Delegate); // 달리기 알림
-DECLARE_MULTICAST_DELEGATE(FMyStopRun_Delegate); // 달리기 멈춤 알림
-DECLARE_MULTICAST_DELEGATE(FMyAttackCheck_Delegate); // 공격 체크 알림
+//DECLARE_MULTICAST_DELEGATE(FMyAttack_Delegate); // 공격 알림
+//DECLARE_MULTICAST_DELEGATE(FMyTakeDamage_Delegate); // 데미지 알림
+//DECLARE_MULTICAST_DELEGATE(FMyRun_Delegate); // 달리기 알림
+//DECLARE_MULTICAST_DELEGATE(FMyStopRun_Delegate); // 달리기 멈춤 알림
+//DECLARE_MULTICAST_DELEGATE(FMyAttackCheck_Delegate); // 공격 체크 알림
 
 UCLASS()
 class LASTMANSTANDING_API AABCharacter : public ACharacter
@@ -46,6 +46,7 @@ public:
 
 	void SetCharacterState(ECharacterState NewState);
 	ECharacterState GetCharacterState() const;
+	void AttackCheck();
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* SpringArm;
@@ -57,23 +58,27 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		float AttackRange;
 
+	UPROPERTY(VisibleInstanceOnly, Replicated, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackPower;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		float AttackRadius;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, Replicated, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
 
-	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
-		//float fSprintSpeedMultiPlayer; // 달리기
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
+		float fSprintSpeedMultiPlayer; // 달리기
 
-	UPROPERTY()
+	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
+	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UABAnimInstance* ABAnim;
 
-	FMyAttack_Delegate MyAttack;
-	FMyTakeDamage_Delegate MyTakeDamage;
-	FMyRun_Delegate MyRun;
-	FMyStopRun_Delegate MyStopRun;
-	FMyAttackCheck_Delegate MyAttackCheck;
+	//FMyAttack_Delegate MyAttack;
+	//FMyTakeDamage_Delegate MyTakeDamage;
+	//FMyRun_Delegate MyRun;
+	//FMyStopRun_Delegate MyStopRun;
+	//FMyAttackCheck_Delegate MyAttackCheck;
 
 private:
 	int RandomTransform(int min, int max); // 랜덤 좌표 구하기
@@ -81,7 +86,9 @@ private:
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UFUNCTION()
+		void CharacterDead(AABCharacter* DeadCharacter);
+	UPROPERTY(Transient, Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 		ECharacterState CurrentState;
 	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 		bool bIsPlayer;
@@ -89,18 +96,14 @@ private:
 		class AABAIController* ABAIController;
 	UPROPERTY()
 		class AABPlayerController* ABPlayerController;
+	//UFUNCTION(NetMulticast, Reliable)
 	void UpDown(float NewAxisValue);
+	//UFUNCTION(NetMulticast, Reliable)
 	void LeftRight(float NewAxisValue);
+	//UFUNCTION(NetMulticast, Reliable)
 	void LookUp(float NewAxisValue);
+	//UFUNCTION(NetMulticast, Reliable)
 	void Turn(float NewAxisValue);
-	//UFUNCTION(NetMulticast, Reliable)
-	//void Run();
-	//UFUNCTION(NetMulticast, Reliable)
-	//void StopRun();
-	//UFUNCTION(NetMulticast, Reliable)
-	void AttackCheck();
-	//UFUNCTION(NetMulticast, Reliable)
-	//void Attack();
 
 
 };

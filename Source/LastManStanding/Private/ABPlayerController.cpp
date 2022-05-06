@@ -10,7 +10,7 @@
 
 AABPlayerController::AABPlayerController()
 {
-	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
+	//fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
 }
 
 void AABPlayerController::PostInitializeComponents()
@@ -90,6 +90,7 @@ void AABPlayerController::Turn(float NewAxisValue)
 */
 // 액션 함수
 
+
 void AABPlayerController::Jump()
 {
 	APawn* const myPawn = GetPawn();
@@ -99,41 +100,78 @@ void AABPlayerController::Jump()
 	myCharacter->JumpKeyHoldTime = 0.0f;
 }
 
-void AABPlayerController::Attack()
-{
-	APawn* const myPawn = GetPawn();
-	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//ABCharacter = Cast <AABCharacter>(ABPawn);
-	if (myCharacter->IsAttacking) return;
-
-	myCharacter->ABAnim->PlayAttackMontage();
-
-	myCharacter->IsAttacking = true;
-
-	//MyAttack.Broadcast();
-}
-
-
+// 달리기
 void AABPlayerController::Run()
 {
 	APawn* const myPawn = GetPawn();
 	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//ABCharacter = Cast <AABCharacter>(ABPawn);
-	myCharacter->GetCharacterMovement()->MaxWalkSpeed *= fSprintSpeedMultiPlayer;
+
+	//myCharacter->GetCharacterMovement()->MaxWalkSpeed *= myCharacter->fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
+
+	CtoS_Run(myCharacter);
 	//MyRun.Broadcast();
+}
+
+void AABPlayerController::CtoS_Run_Implementation(AABCharacter* ClientCharacter)
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_Run(ClientCharacter);
+		}
+	}
+}
+
+void AABPlayerController::StoC_Run_Implementation(AABCharacter* ClientCharacter)
+{
+	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
+
+	if (ClientCharacter == nullptr) return;
+
+	ClientCharacter->GetCharacterMovement()->MaxWalkSpeed *= ClientCharacter->fSprintSpeedMultiPlayer;
+	
 }
 
 void AABPlayerController::StopRun()
 {
 	APawn* const myPawn = GetPawn();
 	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	//ABCharacter = Cast <AABCharacter>(ABPawn);
-	myCharacter->GetCharacterMovement()->MaxWalkSpeed /= fSprintSpeedMultiPlayer;
+
+	//myCharacter->GetCharacterMovement()->MaxWalkSpeed /= myCharacter->fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
+
+	CtoS_StopRun(myCharacter);
 	//MyStopRun.Broadcast();
 }
 
+void AABPlayerController::CtoS_StopRun_Implementation(AABCharacter* ClientCharacter)
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_StopRun(ClientCharacter);
+		}
+	}
+}
+
+void AABPlayerController::StoC_StopRun_Implementation(AABCharacter* ClientCharacter)
+{
+	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
+	if (ClientCharacter == nullptr) return;
+
+	ClientCharacter->GetCharacterMovement()->MaxWalkSpeed /= ClientCharacter->fSprintSpeedMultiPlayer;
+}
 // 채팅
 
 void AABPlayerController::SendMessage(const FText& Text)
@@ -196,8 +234,23 @@ void AABPlayerController::StoC_SendMessage_Implementation(const FString& Message
 }
 
 // 공격(서버)
-/*
-void AABPlayerController::CtoS_Attack_Implementation()
+
+void AABPlayerController::Attack()
+{
+	APawn* const myPawn = GetPawn();
+	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	UAnimMontage* playPunch;
+
+	// 이 부분에서 공격 몽타주를 실행한다.
+	playPunch = myCharacter->ABAnim->GetAttackMontage();
+	myCharacter->ABAnim->PlayAttackMontage(playPunch);
+	myCharacter->IsAttacking = true;
+
+	CtoS_Attack(myCharacter, playPunch);
+	//MyStopRun.Broadcast();
+}
+
+void AABPlayerController::CtoS_Attack_Implementation(AABCharacter* ClientCharacter, UAnimMontage* playPunch)
 {
 	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
 	TArray<AActor*> OutActors;
@@ -207,21 +260,20 @@ void AABPlayerController::CtoS_Attack_Implementation()
 		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->StoC_Attack();
+			PC->StoC_Attack(ClientCharacter, playPunch);
 		}
 	}
 }
 
-void AABPlayerController::StoC_Attack_Implementation()
+void AABPlayerController::StoC_Attack_Implementation(AABCharacter* ClientCharacter, UAnimMontage* playPunch)
 {
 	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
-	APawn* MyPawn = GetPawn();
-	AABCharacter* MyCharacter = Cast<AABCharacter>(MyPawn);
-	if (MyCharacter == nullptr) return;
+	if (ClientCharacter->IsAttacking) return;
 
-	MyCharacter->AttackCheck();
+	ClientCharacter->ABAnim->PlayAttackMontage(playPunch);
+	ClientCharacter->IsAttacking = true;
+
 }
-*/
 
 // 리플리케이트
 
@@ -232,3 +284,4 @@ void AABPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AABPlayerController, ABCharacter);
 	DOREPLIFETIME(AABPlayerController, ABPawn);
 }
+

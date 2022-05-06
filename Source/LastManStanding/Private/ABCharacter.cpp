@@ -40,6 +40,7 @@ AABCharacter::AABCharacter()
 
 	SetControlMode(EControlMode::Player);
 	GetCharacterMovement()->JumpZVelocity = 400.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 
 	IsAttacking = false;
 
@@ -47,7 +48,8 @@ AABCharacter::AABCharacter()
 
 	AttackRange = 50.0f;
 	AttackRadius = 25.0f;
-	//fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
+	AttackPower = 100.0f;
+	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
 
 	AIControllerClass = AABAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -134,6 +136,7 @@ void AABCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
+
 /*
 void AABCharacter::Attack()
 {
@@ -160,8 +163,8 @@ void AABCharacter::StopRun()
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
 	//MyStopRun.Broadcast();
 }
-
-
+*/
+/*
 void AABCharacter::BeginCrouch()
 {
 	this->Crouch();
@@ -211,9 +214,11 @@ void AABCharacter::AttackCheck()
 		if (HitResult.Actor.IsValid())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Hit!"));
-
+			//ABAnim->SetDeadAnim();
+			//SetActorEnableCollision(false);
+			//SetCharacterState(ECharacterState::DEAD); // 사망처리
 			FDamageEvent DamageEvent;
-			HitResult.Actor->TakeDamage(100.0f, DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(AttackPower, DamageEvent, GetController(), this);
 		}
 	}
 
@@ -279,8 +284,10 @@ void AABCharacter::PossessedBy(AController* NewController)
 }
 */
 
+// 그리고 몽타주가 끝났을 때
 void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
+	// 어택 변수를 다시 false로 변환한다.
 	ABCHECK(IsAttacking);
 	IsAttacking = false;
 }
@@ -299,6 +306,11 @@ float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 
 	//MyTakeDamage.Broadcast();
 	return FinalDamage;
+}
+
+void AABCharacter::CharacterDead(AABCharacter* DeadCharacter)
+{
+
 }
 
 void AABCharacter::SetCharacterState(ECharacterState NewState)
@@ -366,11 +378,16 @@ FVector AABCharacter::GiveFVector()
 	return FVector(nDestinationX, nDestinationY, 218);
 }
 
-/*
+
 void AABCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AABCharacter, fSprintSpeedMultiPlayer);
+	DOREPLIFETIME(AABCharacter, CurrentState);
+	DOREPLIFETIME(AABCharacter, IsAttacking);
+	DOREPLIFETIME(AABCharacter, AttackPower);
+	//DOREPLIFETIME(AABCharacter, ABAnim);AttackPower
+
 }
-*/
+

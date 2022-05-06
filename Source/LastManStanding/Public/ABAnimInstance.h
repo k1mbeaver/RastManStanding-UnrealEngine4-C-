@@ -9,6 +9,7 @@
 // 공격 체크용 딜리게이트
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonStart_PunchDelegate); // 공격 시작
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonEnd_PunchDelegate); // 공격 끝
+DECLARE_MULTICAST_DELEGATE(FPunchAnimation_PunchAnimationDelegate); // 공격 애니메이션 출력
 
 /**
  * 
@@ -22,11 +23,16 @@ public:
 	UABAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayAttackMontage();
+	void PlayAttackMontage(UAnimMontage* playPunch);
+	UAnimMontage* GetAttackMontage();
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackMontage;
+
 	FOnOnCollisonStart_PunchDelegate OnOnCollisonStart_Punch;
 	FOnOnCollisonEnd_PunchDelegate OnOnCollisonEnd_Punch;
+	FPunchAnimation_PunchAnimationDelegate PunchAnimation_Punch;
 	FName GetAttackMontageSectionName(int32 Section);
-	void SetDeadAnim() { IsDead = true; }
+	void SetDeadAnim();
 
 private:
 	UFUNCTION()
@@ -38,9 +44,6 @@ private:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsInAir;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		UAnimMontage* AttackMontage;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsDead;
