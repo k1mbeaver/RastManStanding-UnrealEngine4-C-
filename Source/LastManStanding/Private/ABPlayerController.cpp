@@ -21,6 +21,9 @@ void AABPlayerController::PostInitializeComponents()
 void AABPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
+	myPawn = aPawn;
+	myCharacter = Cast<AABCharacter>(myPawn);
+
 }
 
 void AABPlayerController::BeginPlay()
@@ -93,8 +96,8 @@ void AABPlayerController::Turn(float NewAxisValue)
 
 void AABPlayerController::Jump()
 {
-	APawn* const myPawn = GetPawn();
-	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 	//ABCharacter = Cast <AABCharacter>(ABPawn);
 	myCharacter->bPressedJump = true;
 	myCharacter->JumpKeyHoldTime = 0.0f;
@@ -103,8 +106,8 @@ void AABPlayerController::Jump()
 // 달리기
 void AABPlayerController::Run()
 {
-	APawn* const myPawn = GetPawn();
-	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 
 	//myCharacter->GetCharacterMovement()->MaxWalkSpeed *= myCharacter->fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
@@ -140,8 +143,8 @@ void AABPlayerController::StoC_Run_Implementation(AABCharacter* ClientCharacter)
 
 void AABPlayerController::StopRun()
 {
-	APawn* const myPawn = GetPawn();
-	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 
 	//myCharacter->GetCharacterMovement()->MaxWalkSpeed /= myCharacter->fSprintSpeedMultiPlayer;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
@@ -237,12 +240,13 @@ void AABPlayerController::StoC_SendMessage_Implementation(const FString& Message
 
 void AABPlayerController::Attack()
 {
-	APawn* const myPawn = GetPawn();
-	AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	//APawn* const myPawn = GetPawn();
+	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 	UAnimMontage* playPunch;
 
 	// 이 부분에서 공격 몽타주를 실행한다.
 	playPunch = myCharacter->ABAnim->GetAttackMontage();
+	myCharacter->AttackPower = 100.0f;
 	myCharacter->ABAnim->PlayAttackMontage(playPunch);
 	myCharacter->IsAttacking = true;
 
@@ -270,9 +274,9 @@ void AABPlayerController::StoC_Attack_Implementation(AABCharacter* ClientCharact
 	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
 	if (ClientCharacter->IsAttacking) return;
 
+	ClientCharacter->AttackPower = 100.0f;
 	ClientCharacter->ABAnim->PlayAttackMontage(playPunch);
 	ClientCharacter->IsAttacking = true;
-
 }
 
 // 리플리케이트
@@ -281,7 +285,7 @@ void AABPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AABPlayerController, ABCharacter);
-	DOREPLIFETIME(AABPlayerController, ABPawn);
+	DOREPLIFETIME(AABPlayerController, myCharacter);
+	DOREPLIFETIME(AABPlayerController, myPawn);
 }
 

@@ -47,9 +47,9 @@ private:
 	UPROPERTY()
 		class UABAnimInstance* ABAnimInstance;
 	UPROPERTY(VisibleInstanceOnly, Replicated)
-		class AABCharacter* ABCharacter;
+		class AABCharacter* myCharacter;
 	UPROPERTY(VisibleInstanceOnly, Replicated)
-		class APawn* ABPawn;
+		class APawn* myPawn;
 	//void UpDown(float NewAxisValue);
 	//void LeftRight(float NewAxisValue);
 	//void LookUp(float NewAxisValue);

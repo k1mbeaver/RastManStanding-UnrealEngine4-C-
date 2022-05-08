@@ -73,6 +73,7 @@ void AABCharacter::PostInitializeComponents()
 	ABAnim->OnOnCollisonStart_Punch.AddUObject(this, &AABCharacter::AttackCheck);
 }
 
+
 // Called when the game starts or when spawned
 void AABCharacter::BeginPlay()
 {
@@ -83,6 +84,7 @@ void AABCharacter::BeginPlay()
 	if (bIsPlayer)
 	{
 		ABPlayerController = Cast<AABPlayerController>(GetController());
+		//SetControlMode(EControlMode::Player);
 		ABCHECK(nullptr != ABPlayerController);
 	}
 
@@ -119,12 +121,18 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AABCharacter::UpDown(float NewAxisValue)
 {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
+	FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X);
+	Direction.Z = 0.0f;
+	Direction.Normalize();
+	AddMovementInput(Direction, NewAxisValue);
 }
 
 void AABCharacter::LeftRight(float NewAxisValue)
 {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
+	FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y);
+	Direction.Z = 0.0f;
+	Direction.Normalize();
+	AddMovementInput(Direction, NewAxisValue);
 }
 
 void AABCharacter::LookUp(float NewAxisValue)
@@ -217,14 +225,69 @@ void AABCharacter::AttackCheck()
 			//ABAnim->SetDeadAnim();
 			//SetActorEnableCollision(false);
 			//SetCharacterState(ECharacterState::DEAD); // 사망처리
+			//AABCharacter* DeadCharacter = Cast<AABCharacter>(HitResult.Actor);
 			FDamageEvent DamageEvent;
 			HitResult.Actor->TakeDamage(AttackPower, DamageEvent, GetController(), this);
+			//MultiAttackCheck(HitResult, AttackPower, DamageEvent, GetController(), this);
+			//CharacterDead(DeadCharacter);
+			
 		}
 	}
-
 	//MyAttackCheck.Broadcast();
 }
 
+float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
+
+	if (FinalDamage > 0.0f) // 일단 맞으면 기절
+	{
+		ABAnim->SetDeadAnim();
+		//SetActorEnableCollision(false);
+		SetCharacterState(ECharacterState::DEAD); // 사망처리
+	}
+
+	//MyTakeDamage.Broadcast();
+	return FinalDamage;
+	
+}
+// TakeDamage 대신에 사용할거?
+
+void AABCharacter::MultiAttackCheck_Implementation(FHitResult myHitResult, float myAttackPower, FDamageEvent myDamageEvent, AController* myController, AActor* myDamageCauser)
+{
+	myHitResult.Actor->TakeDamage(myAttackPower, myDamageEvent, myController, myDamageCauser);
+	//AABCharacter* DeadCharacter = Cast<AABCharacter>(myHitResult.Actor);
+	//DeadCharacter->ABAnim->SetDeadAnim();
+	//DeadCharacter->SetCharacterState(ECharacterState::DEAD);
+}
+
+
+/*
+void AABPlayerController::CtoS_AttackCheck_Implementation(AABCharacter* ClientCharacter, UAnimMontage* playPunch)
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_Attack(ClientCharacter, playPunch);
+		}
+	}
+}
+
+void AABPlayerController::StoC_AttackCheck_Implementation(AABCharacter* ClientCharacter, UAnimMontage* playPunch)
+{
+	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
+	if (ClientCharacter->IsAttacking) return;
+
+	ClientCharacter->ABAnim->PlayAttackMontage(playPunch);
+	ClientCharacter->IsAttacking = true;
+}
+*/
 void AABCharacter::SetControlMode(EControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
@@ -292,25 +355,10 @@ void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	IsAttacking = false;
 }
 
-float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
-
-	if (FinalDamage > 0.0f) // 일단 맞으면 기절
-	{
-		ABAnim->SetDeadAnim();
-		//SetActorEnableCollision(false);
-		SetCharacterState(ECharacterState::DEAD); // 사망처리
-	}
-
-	//MyTakeDamage.Broadcast();
-	return FinalDamage;
-}
-
 void AABCharacter::CharacterDead(AABCharacter* DeadCharacter)
 {
-
+	DeadCharacter->ABAnim->SetDeadAnim();
+	DeadCharacter->SetCharacterState(ECharacterState::DEAD);
 }
 
 void AABCharacter::SetCharacterState(ECharacterState NewState)
@@ -324,7 +372,7 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		if (bIsPlayer) // 플레이어일 경우
 		{
-			SetControlMode(EControlMode::Player);
+			(EControlMode::Player);
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 			SetActorLocation(GiveFVector()); // 랜덤배치
 			EnableInput(ABPlayerController);
@@ -387,6 +435,8 @@ void AABCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AABCharacter, CurrentState);
 	DOREPLIFETIME(AABCharacter, IsAttacking);
 	DOREPLIFETIME(AABCharacter, AttackPower);
+	DOREPLIFETIME(AABCharacter, bIsPlayer);
+	//DOREPLIFETIME(AABCharacter, CurrentControlMode);
 	//DOREPLIFETIME(AABCharacter, ABAnim);AttackPower
 
 }

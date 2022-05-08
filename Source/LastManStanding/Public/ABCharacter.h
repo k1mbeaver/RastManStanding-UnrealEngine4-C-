@@ -38,14 +38,27 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamasgeCauser) override;
+	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamasgeCauser) override;
 	//virtual void PossessedBy(AController* NewController) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void SetCharacterState(ECharacterState NewState);
+	//UFUNCTION(NetMulticast, Reliable)
+    void SetCharacterState(ECharacterState NewState);
 	ECharacterState GetCharacterState() const;
+
+	
+	//UFUNCTION(Server, Reliable)
+		//void CtoS_AttackCheck();
+
+	//UFUNCTION(Client, Reliable)
+		//void StoC_AttackCheck();
+
+	UFUNCTION(NetMulticast, Reliable)
+		//void MultiAttackCheck(FHitResult myHitResult);
+		void MultiAttackCheck(FHitResult myHitResult, float myAttackPower, FDamageEvent myDamageEvent, AController* myController, AActor* myDamageCauser);
+
 	void AttackCheck();
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -86,11 +99,12 @@ private:
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	//UFUNCTION(NetMulticast, Reliable)
 	UFUNCTION()
 		void CharacterDead(AABCharacter* DeadCharacter);
 	UPROPERTY(Transient, Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 		ECharacterState CurrentState;
-	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 		bool bIsPlayer;
 	UPROPERTY()
 		class AABAIController* ABAIController;
