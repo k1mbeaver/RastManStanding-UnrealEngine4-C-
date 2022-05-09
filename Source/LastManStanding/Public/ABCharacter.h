@@ -55,10 +55,19 @@ public:
 	//UFUNCTION(Client, Reliable)
 		//void StoC_AttackCheck();
 
+	/*
 	UFUNCTION(NetMulticast, Reliable)
 		//void MultiAttackCheck(FHitResult myHitResult);
 		void MultiAttackCheck(FHitResult myHitResult, float myAttackPower, FDamageEvent myDamageEvent, AController* myController, AActor* myDamageCauser);
 
+	UFUNCTION(Server, Reliable)
+		//void MultiAttackCheck(FHitResult myHitResult);
+		void CtoS_AttackCheck(AABCharacter* DeadCharacter);
+
+	UFUNCTION(Client, Reliable)
+		//void MultiAttackCheck(FHitResult myHitResult);
+		void StoC_AttackCheck(AABCharacter* DeadCharacter);
+	*/
 	void AttackCheck();
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -86,6 +95,9 @@ public:
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UABAnimInstance* ABAnim;
+
+	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Death)
+		//AABCharacter* DeathCharacter;
 
 	//FMyAttack_Delegate MyAttack;
 	//FMyTakeDamage_Delegate MyTakeDamage;

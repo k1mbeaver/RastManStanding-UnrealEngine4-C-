@@ -277,6 +277,13 @@ void AABPlayerController::StoC_Attack_Implementation(AABCharacter* ClientCharact
 	ClientCharacter->AttackPower = 100.0f;
 	ClientCharacter->ABAnim->PlayAttackMontage(playPunch);
 	ClientCharacter->IsAttacking = true;
+
+	//if (ClientCharacter->DeathCharacter != NULL)
+	//{
+		//ClientCharacter->DeathCharacter->ABAnim->SetDeadAnim();
+		//ClientCharacter->DeathCharacter->SetCharacterState(ECharacterState::DEAD);
+		//ClientCharacter->DeathCharacter = NULL;
+	//}
 }
 
 // 리플리케이트

@@ -50,6 +50,7 @@ AABCharacter::AABCharacter()
 	AttackRadius = 25.0f;
 	AttackPower = 100.0f;
 	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
+	//DeathCharacter = NULL; // 일단 죽은 캐릭터는 없다는 
 
 	AIControllerClass = AABAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -228,6 +229,7 @@ void AABCharacter::AttackCheck()
 			//AABCharacter* DeadCharacter = Cast<AABCharacter>(HitResult.Actor);
 			FDamageEvent DamageEvent;
 			HitResult.Actor->TakeDamage(AttackPower, DamageEvent, GetController(), this);
+			//CtoS_AttackCheck(DeathCharacter);
 			//MultiAttackCheck(HitResult, AttackPower, DamageEvent, GetController(), this);
 			//CharacterDead(DeadCharacter);
 			
@@ -243,6 +245,7 @@ float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 
 	if (FinalDamage > 0.0f) // 일단 맞으면 기절
 	{
+		//DeathCharacter = this; // 여기서 죽은 캐릭터를 받아온다.
 		ABAnim->SetDeadAnim();
 		//SetActorEnableCollision(false);
 		SetCharacterState(ECharacterState::DEAD); // 사망처리
@@ -254,6 +257,27 @@ float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 }
 // TakeDamage 대신에 사용할거?
 
+/*
+void AABCharacter::CtoS_AttackCheck_Implementation(AABCharacter* DeadCharacter)
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_AttackCheck();
+		}
+	}
+}
+
+void AABCharacter::StoC_AttackCheck_Implementation(AABCharacter* DeadCharacter)
+{
+	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
+
+}
 void AABCharacter::MultiAttackCheck_Implementation(FHitResult myHitResult, float myAttackPower, FDamageEvent myDamageEvent, AController* myController, AActor* myDamageCauser)
 {
 	myHitResult.Actor->TakeDamage(myAttackPower, myDamageEvent, myController, myDamageCauser);
@@ -261,7 +285,7 @@ void AABCharacter::MultiAttackCheck_Implementation(FHitResult myHitResult, float
 	//DeadCharacter->ABAnim->SetDeadAnim();
 	//DeadCharacter->SetCharacterState(ECharacterState::DEAD);
 }
-
+*/
 
 /*
 void AABPlayerController::CtoS_AttackCheck_Implementation(AABCharacter* ClientCharacter, UAnimMontage* playPunch)
@@ -436,7 +460,7 @@ void AABCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AABCharacter, IsAttacking);
 	DOREPLIFETIME(AABCharacter, AttackPower);
 	DOREPLIFETIME(AABCharacter, bIsPlayer);
-	//DOREPLIFETIME(AABCharacter, CurrentControlMode);
+	//DOREPLIFETIME(AABCharacter, DeathCharacter);
 	//DOREPLIFETIME(AABCharacter, ABAnim);AttackPower
 
 }
