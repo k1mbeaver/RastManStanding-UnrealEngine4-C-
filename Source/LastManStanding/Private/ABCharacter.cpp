@@ -101,6 +101,16 @@ void AABCharacter::BeginPlay()
 void AABCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	/*
+	if (CurrentState == ECharacterState::DEAD)
+	{
+		ABAnim->SetDeadAnim();
+		SetActorEnableCollision(false);
+		//SetCharacterState(ECharacterState::DEAD); // 사망처리
+	}
+	*/
+	
 }
 
 
@@ -248,7 +258,8 @@ float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 		//DeathCharacter = this; // 여기서 죽은 캐릭터를 받아온다.
 		ABAnim->SetDeadAnim();
 		//SetActorEnableCollision(false);
-		SetCharacterState(ECharacterState::DEAD); // 사망처리
+		SetCharacterState(ECharacterState::DEAD); // 사망처리(서버에서는 실행), 클라이언트에서는 따로 해준다.
+		MultiAttackCheck(this); // 클라이언트, 서버에서 모두 실행한다.
 	}
 
 	//MyTakeDamage.Broadcast();
@@ -278,14 +289,21 @@ void AABCharacter::StoC_AttackCheck_Implementation(AABCharacter* DeadCharacter)
 	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
 
 }
-void AABCharacter::MultiAttackCheck_Implementation(FHitResult myHitResult, float myAttackPower, FDamageEvent myDamageEvent, AController* myController, AActor* myDamageCauser)
+*/
+
+// 죽은 캐릭터의 정보를 클라이언트, 서버에 퍼트린다.
+// 애니메이션을 출력하되 그 캐릭터는 그 자리에 고정시키고 충돌처리를 없앤다.
+void AABCharacter::MultiAttackCheck_Implementation(AABCharacter* DeathCharacter)
 {
-	myHitResult.Actor->TakeDamage(myAttackPower, myDamageEvent, myController, myDamageCauser);
+	DeathCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	DeathCharacter->GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	DeathCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	DeathCharacter->ABAnim->SetDeadAnim();
 	//AABCharacter* DeadCharacter = Cast<AABCharacter>(myHitResult.Actor);
 	//DeadCharacter->ABAnim->SetDeadAnim();
 	//DeadCharacter->SetCharacterState(ECharacterState::DEAD);
 }
-*/
+
 
 /*
 void AABPlayerController::CtoS_AttackCheck_Implementation(AABCharacter* ClientCharacter, UAnimMontage* playPunch)

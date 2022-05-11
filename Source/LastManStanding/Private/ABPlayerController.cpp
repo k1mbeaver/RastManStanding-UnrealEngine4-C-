@@ -278,12 +278,15 @@ void AABPlayerController::StoC_Attack_Implementation(AABCharacter* ClientCharact
 	ClientCharacter->ABAnim->PlayAttackMontage(playPunch);
 	ClientCharacter->IsAttacking = true;
 
-	//if (ClientCharacter->DeathCharacter != NULL)
-	//{
-		//ClientCharacter->DeathCharacter->ABAnim->SetDeadAnim();
+	/*
+	if (ClientCharacter->DeathCharacter != NULL)
+	{
+		ClientCharacter->DeathCharacter->ABAnim->SetDeadAnim();
 		//ClientCharacter->DeathCharacter->SetCharacterState(ECharacterState::DEAD);
-		//ClientCharacter->DeathCharacter = NULL;
-	//}
+		ClientCharacter->DeathCharacter->SetActorEnableCollision(false);
+	    ClientCharacter->DeathCharacter = NULL;
+	}
+	*/
 }
 
 // 리플리케이트

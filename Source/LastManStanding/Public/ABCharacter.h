@@ -55,11 +55,11 @@ public:
 	//UFUNCTION(Client, Reliable)
 		//void StoC_AttackCheck();
 
-	/*
+
 	UFUNCTION(NetMulticast, Reliable)
 		//void MultiAttackCheck(FHitResult myHitResult);
-		void MultiAttackCheck(FHitResult myHitResult, float myAttackPower, FDamageEvent myDamageEvent, AController* myController, AActor* myDamageCauser);
-
+		void MultiAttackCheck(AABCharacter* DeathCharacter);
+/*
 	UFUNCTION(Server, Reliable)
 		//void MultiAttackCheck(FHitResult myHitResult);
 		void CtoS_AttackCheck(AABCharacter* DeadCharacter);
