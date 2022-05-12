@@ -29,6 +29,11 @@ public:
 	UFUNCTION()
 		void FocusGame();
 
+	UPROPERTY(VisibleInstanceOnly, Replicated)
+		class AABCharacter* myCharacter;
+	UPROPERTY(VisibleInstanceOnly, Replicated)
+		class APawn* myPawn;
+
 	//float testkey = 0;
 
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
@@ -46,10 +51,6 @@ private:
 		//void StoC_Attack();
 	UPROPERTY()
 		class UABAnimInstance* ABAnimInstance;
-	UPROPERTY(VisibleInstanceOnly, Replicated)
-		class AABCharacter* myCharacter;
-	UPROPERTY(VisibleInstanceOnly, Replicated)
-		class APawn* myPawn;
 	//void UpDown(float NewAxisValue);
 	//void LeftRight(float NewAxisValue);
 	//void LookUp(float NewAxisValue);

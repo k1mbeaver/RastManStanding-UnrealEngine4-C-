@@ -99,8 +99,11 @@ void AABPlayerController::Jump()
 	//APawn* const myPawn = GetPawn();
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 	//ABCharacter = Cast <AABCharacter>(ABPawn);
-	myCharacter->bPressedJump = true;
-	myCharacter->JumpKeyHoldTime = 0.0f;
+	if (myCharacter->CurrentState == ECharacterState::READY)
+	{
+		myCharacter->bPressedJump = true;
+		myCharacter->JumpKeyHoldTime = 0.0f;
+	}
 }
 
 // 달리기
@@ -110,10 +113,15 @@ void AABPlayerController::Run()
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 
 	//myCharacter->GetCharacterMovement()->MaxWalkSpeed *= myCharacter->fSprintSpeedMultiPlayer;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
 
-	CtoS_Run(myCharacter);
-	//MyRun.Broadcast();
+	if (myCharacter->CurrentState == ECharacterState::READY)
+	{
+		if (myCharacter == nullptr) return;
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
+
+		CtoS_Run(myCharacter);
+		//MyRun.Broadcast();
+	}
 }
 
 void AABPlayerController::CtoS_Run_Implementation(AABCharacter* ClientCharacter)
@@ -147,10 +155,14 @@ void AABPlayerController::StopRun()
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 
 	//myCharacter->GetCharacterMovement()->MaxWalkSpeed /= myCharacter->fSprintSpeedMultiPlayer;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
+	if (myCharacter->CurrentState == ECharacterState::READY)
+	{
+		if (myCharacter == nullptr) return;
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
 
-	CtoS_StopRun(myCharacter);
-	//MyStopRun.Broadcast();
+		CtoS_StopRun(myCharacter);
+		//MyStopRun.Broadcast();
+	}
 }
 
 void AABPlayerController::CtoS_StopRun_Implementation(AABCharacter* ClientCharacter)
@@ -242,16 +254,20 @@ void AABPlayerController::Attack()
 {
 	//APawn* const myPawn = GetPawn();
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
-	UAnimMontage* playPunch;
+	if (myCharacter->CurrentState == ECharacterState::READY)
+	{
+		if (myCharacter == nullptr) return;
+		UAnimMontage* playPunch;
 
-	// 이 부분에서 공격 몽타주를 실행한다.
-	playPunch = myCharacter->ABAnim->GetAttackMontage();
-	myCharacter->AttackPower = 100.0f;
-	myCharacter->ABAnim->PlayAttackMontage(playPunch);
-	myCharacter->IsAttacking = true;
+		// 이 부분에서 공격 몽타주를 실행한다.
+		playPunch = myCharacter->ABAnim->GetAttackMontage();
+		myCharacter->AttackPower = 100.0f;
+		myCharacter->ABAnim->PlayAttackMontage(playPunch);
+		myCharacter->IsAttacking = true;
 
-	CtoS_Attack(myCharacter, playPunch);
-	//MyStopRun.Broadcast();
+		CtoS_Attack(myCharacter, playPunch);
+		//MyStopRun.Broadcast();
+	}
 }
 
 void AABPlayerController::CtoS_Attack_Implementation(AABCharacter* ClientCharacter, UAnimMontage* playPunch)
@@ -290,6 +306,7 @@ void AABPlayerController::StoC_Attack_Implementation(AABCharacter* ClientCharact
 }
 
 // 리플리케이트
+
 
 void AABPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

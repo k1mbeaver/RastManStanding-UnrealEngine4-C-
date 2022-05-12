@@ -58,7 +58,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		//void MultiAttackCheck(FHitResult myHitResult);
-		void MultiAttackCheck(AABCharacter* DeathCharacter);
+		void MultiAttackCheck(AABCharacter* DeathCharacter, AController* DeathPlayer); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
 /*
 	UFUNCTION(Server, Reliable)
 		//void MultiAttackCheck(FHitResult myHitResult);
@@ -99,6 +99,9 @@ public:
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Death)
 		//AABCharacter* DeathCharacter;
 
+	UPROPERTY(Transient, Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+		ECharacterState CurrentState;
+
 	//FMyAttack_Delegate MyAttack;
 	//FMyTakeDamage_Delegate MyTakeDamage;
 	//FMyRun_Delegate MyRun;
@@ -114,8 +117,6 @@ private:
 	//UFUNCTION(NetMulticast, Reliable)
 	UFUNCTION()
 		void CharacterDead(AABCharacter* DeadCharacter);
-	UPROPERTY(Transient, Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
-		ECharacterState CurrentState;
 	UPROPERTY(Transient, Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 		bool bIsPlayer;
 	UPROPERTY()
