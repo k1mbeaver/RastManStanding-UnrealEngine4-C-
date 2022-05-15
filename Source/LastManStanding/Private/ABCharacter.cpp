@@ -150,7 +150,6 @@ void AABCharacter::LeftRight(float NewAxisValue)
 		Direction.Normalize();
 		AddMovementInput(Direction, NewAxisValue);
 	}
-
 }
 
 void AABCharacter::LookUp(float NewAxisValue)
@@ -159,11 +158,20 @@ void AABCharacter::LookUp(float NewAxisValue)
 	{
 		AddControllerPitchInput(NewAxisValue);
 	}
+
+	else
+	{
+		AddControllerPitchInput(NewAxisValue);
+	}
 }
 
 void AABCharacter::Turn(float NewAxisValue)
 {
 	if (CurrentState == ECharacterState::READY)
+	{
+		AddControllerYawInput(NewAxisValue);
+	}
+	else
 	{
 		AddControllerYawInput(NewAxisValue);
 	}
@@ -317,7 +325,9 @@ void AABCharacter::MultiAttackCheck_Implementation(AABCharacter* DeathCharacter,
 	if (DeathCharacter->bIsPlayer)
 	{
 		AABPlayerController* DeathMultiPlayer = Cast<AABPlayerController>(DeathCharacter);
-		DeathCharacter->DisableInput(DeathMultiPlayer);
+		//DeathCharacter->GetMesh()->DetachFromParent(true); // 여기서 메쉬는 가만히 있고 나머지는 움직이게함
+		//DeathCharacter->GetMesh()->SetSkeletalMesh(NULL);
+		//DeathCharacter->DisableInput(DeathMultiPlayer);
 	}
 
 	//AABCharacter* DeadCharacter = Cast<AABCharacter>(myHitResult.Actor);
@@ -455,7 +465,9 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		SetActorEnableCollision(false);
 		if (bIsPlayer)
 		{
-			DisableInput(ABPlayerController); // 나중에 플레이어 사망시 자유시점카메라 변환 
+			GetMesh()->DetachFromParent(true); // 여기서 메쉬는 가만히 있고 나머지는 움직이게함 true는 메쉬가 보이게 할건지말건지
+			//GetMesh()->SetSkeletalMesh(NULL);
+			//DisableInput(ABPlayerController); // 나중에 플레이어 사망시 자유시점카메라 변환 
 		}
 
 		else
