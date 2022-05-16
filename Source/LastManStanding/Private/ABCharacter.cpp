@@ -50,6 +50,7 @@ AABCharacter::AABCharacter()
 	AttackRadius = 25.0f;
 	AttackPower = 100.0f;
 	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
+	nMissionClear = 0; // 현재 미션 클리어는 0
 	//DeathCharacter = NULL; // 일단 죽은 캐릭터는 없다는 
 
 	AIControllerClass = AABAIController::StaticClass();
@@ -225,7 +226,7 @@ void AABCharacter::AttackCheck()
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * AttackRange,
 		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel2, // Attack 채널
+		ECollisionChannel::ECC_GameTraceChannel2, // Attack 채널 
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
@@ -248,6 +249,7 @@ void AABCharacter::AttackCheck()
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerPunch!")); // 플레이어가 펀치하는지 확인용
 
 #endif
+
 
 	if (bResult)
 	{
@@ -511,7 +513,7 @@ void AABCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AABCharacter, IsAttacking);
 	DOREPLIFETIME(AABCharacter, AttackPower);
 	DOREPLIFETIME(AABCharacter, bIsPlayer);
-	//DOREPLIFETIME(AABCharacter, DeathCharacter);
+	DOREPLIFETIME(AABCharacter, nMissionClear);
 	//DOREPLIFETIME(AABCharacter, ABAnim);AttackPower
 
 }
