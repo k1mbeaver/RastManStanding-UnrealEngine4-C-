@@ -257,7 +257,7 @@ void AABCharacter::AttackCheck()
 
 			if (nMissionClear > 0)
 			{
-				nKillingCharacter++;
+				nKillingCharacter += 1;
 			}
 			//CtoS_AttackCheck(DeathCharacter);
 			//MultiAttackCheck(HitResult, AttackPower, DamageEvent, GetController(), this);

@@ -34,8 +34,11 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 		class APawn* myPawn;
 
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly, Replicated)
 		bool bMissionClear = false;
+
+	UPROPERTY(VisibleInstanceOnly, Replicated)
+		bool bCanRun = true;
 
 	void SetPlayerMissionClear(int nMissionClear);
 	void PlayerKillingMissionAppear();
@@ -62,7 +65,11 @@ private:
 	//void LeftRight(float NewAxisValue);
 	//void LookUp(float NewAxisValue);
 	//void Turn(float NewAxisValue);
+
+	// 점프 함수
+
 	void Jump();
+
 	void CheckMission();
 
 	// 달리기 함수

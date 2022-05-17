@@ -110,9 +110,12 @@ void AABPlayerController::Jump()
 
 void AABPlayerController::CheckMission()
 {
-	if (bMissionClear == false && myCharacter->nMissionClear == 1)
+	if (bMissionClear == false && myCharacter->nMissionClear == 1) // 캐릭터 체크하는건 뒤로둬서 bool 다를땐 안하게끔
 	{
 		SetPlayerMissionClear(myCharacter->nMissionClear);
+
+		// 여기서 달리기 못하게 하고 속도 고정
+		bCanRun = false;
 		bMissionClear = true; // 다시 실행안되게끔
 	}
 }
@@ -125,7 +128,7 @@ void AABPlayerController::Run()
 
 	//myCharacter->GetCharacterMovement()->MaxWalkSpeed *= myCharacter->fSprintSpeedMultiPlayer;
 
-	if (myCharacter->CurrentState == ECharacterState::READY)
+	if (myCharacter->CurrentState == ECharacterState::READY && bCanRun == true)
 	{
 		if (myCharacter == nullptr) return;
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerRun!"));
@@ -156,6 +159,11 @@ void AABPlayerController::StoC_Run_Implementation(AABCharacter* ClientCharacter)
 
 	if (ClientCharacter == nullptr) return;
 
+	if (bCanRun == false)
+	{
+		myCharacter->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	}
+
 	ClientCharacter->GetCharacterMovement()->MaxWalkSpeed *= ClientCharacter->fSprintSpeedMultiPlayer;
 	
 }
@@ -166,7 +174,9 @@ void AABPlayerController::StopRun()
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 
 	//myCharacter->GetCharacterMovement()->MaxWalkSpeed /= myCharacter->fSprintSpeedMultiPlayer;
-	if (myCharacter->CurrentState == ECharacterState::READY)
+
+
+	if (myCharacter->CurrentState == ECharacterState::READY && bCanRun == true)
 	{
 		if (myCharacter == nullptr) return;
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerStopRun!"));
@@ -196,7 +206,13 @@ void AABPlayerController::StoC_StopRun_Implementation(AABCharacter* ClientCharac
 	// 서버와 클라이언트는 이 이벤트를 받아서 실행한다.
 	if (ClientCharacter == nullptr) return;
 
+	if (bCanRun == false)
+	{
+		myCharacter->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	}
+
 	ClientCharacter->GetCharacterMovement()->MaxWalkSpeed /= ClientCharacter->fSprintSpeedMultiPlayer;
+
 }
 // 채팅
 
@@ -299,6 +315,9 @@ void AABPlayerController::Attack()
 		myCharacter->ABAnim->PlayAttackMontage(playPunch);
 		myCharacter->IsAttacking = true;
 
+		// 여기서 Killing Point 세자
+		SetPlayerKillingPoint(myCharacter->nKillingCharacter);
+
 		CtoS_Attack(myCharacter, playPunch);
 		//MyStopRun.Broadcast();
 	}
@@ -348,5 +367,7 @@ void AABPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(AABPlayerController, myCharacter);
 	DOREPLIFETIME(AABPlayerController, myPawn);
+	DOREPLIFETIME(AABPlayerController, bCanRun);
+	DOREPLIFETIME(AABPlayerController, bMissionClear);
 }
 
