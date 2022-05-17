@@ -35,6 +35,7 @@ void AABPlayerController::BeginPlay()
 	SetInputMode(InputMode);
 }
 
+
 void AABPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -55,6 +56,7 @@ void AABPlayerController::SetupInputComponent()
 	// 액션
 
 	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AABPlayerController::Jump);
+	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Released, this, &AABPlayerController::CheckMission);
 	InputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AABPlayerController::Attack);
 	InputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Pressed, this, &AABPlayerController::Run);
 	InputComponent->BindAction(TEXT("Run"), EInputEvent::IE_Released, this, &AABPlayerController::StopRun);
@@ -103,6 +105,15 @@ void AABPlayerController::Jump()
 	{
 		myCharacter->bPressedJump = true;
 		myCharacter->JumpKeyHoldTime = 0.0f;
+	}
+}
+
+void AABPlayerController::CheckMission()
+{
+	if (bMissionClear == false && myCharacter->nMissionClear == 1)
+	{
+		SetPlayerMissionClear(myCharacter->nMissionClear);
+		bMissionClear = true; // 다시 실행안되게끔
 	}
 }
 
@@ -220,6 +231,29 @@ void AABPlayerController::FocusChatInputText()
 void AABPlayerController::FocusGame()
 {
 	SetInputMode(FInputModeGameOnly());
+}
+
+// 미션
+
+void AABPlayerController::SetPlayerMissionClear(int nMissionClear)
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+	HUD->SetPlayerMissionClear(nMissionClear);
+}
+
+void AABPlayerController::PlayerKillingMissionAppear()
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+	HUD->PlayerKillingMissionAppear();
+}
+
+void AABPlayerController::SetPlayerKillingPoint(int nKillingPoint)
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+	HUD->SetPlayerKillingPoint(nKillingPoint);
 }
 
 // 채팅(서버)

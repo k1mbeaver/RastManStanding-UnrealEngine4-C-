@@ -95,6 +95,9 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Mission)
 		int nMissionClear; // Mission
 
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Mission)
+		int nKillingCharacter; // Mission
+
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UABAnimInstance* ABAnim;

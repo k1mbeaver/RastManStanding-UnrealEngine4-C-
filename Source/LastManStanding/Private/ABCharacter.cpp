@@ -7,6 +7,7 @@
 #include "ABAIController.h"
 #include "ABPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameMain_HUD.h"
 #include <random>
 
 // Sets default values
@@ -103,15 +104,6 @@ void AABCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*
-	if (CurrentState == ECharacterState::DEAD)
-	{
-		ABAnim->SetDeadAnim();
-		SetActorEnableCollision(false);
-		//SetCharacterState(ECharacterState::DEAD); // 사망처리
-	}
-	*/
-	
 }
 
 
@@ -262,6 +254,11 @@ void AABCharacter::AttackCheck()
 			//AABCharacter* DeadCharacter = Cast<AABCharacter>(HitResult.Actor);
 			FDamageEvent DamageEvent;
 			HitResult.Actor->TakeDamage(AttackPower, DamageEvent, GetController(), this);
+
+			if (nMissionClear > 0)
+			{
+				nKillingCharacter++;
+			}
 			//CtoS_AttackCheck(DeathCharacter);
 			//MultiAttackCheck(HitResult, AttackPower, DamageEvent, GetController(), this);
 			//CharacterDead(DeadCharacter);
@@ -467,7 +464,7 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		SetActorEnableCollision(false);
 		if (bIsPlayer)
 		{
-			GetMesh()->DetachFromParent(true); // 여기서 메쉬는 가만히 있고 나머지는 움직이게함 true는 메쉬가 보이게 할건지말건지
+			//GetMesh()->DetachFromComponent(); // 여기서 메쉬는 가만히 있고 나머지는 움직이게함 true는 메쉬가 보이게 할건지말건지
 			//GetMesh()->SetSkeletalMesh(NULL);
 			//DisableInput(ABPlayerController); // 나중에 플레이어 사망시 자유시점카메라 변환 
 		}

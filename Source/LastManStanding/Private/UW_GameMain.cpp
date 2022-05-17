@@ -3,6 +3,7 @@
 
 #include "UW_GameMain.h"
 #include "UW_Chat.h"
+#include "UW_Mission.h"
 
 TSharedPtr<SWidget> UUW_GameMain::GetChatInputTextObject()
 {
@@ -12,4 +13,19 @@ TSharedPtr<SWidget> UUW_GameMain::GetChatInputTextObject()
 void UUW_GameMain::AddChatMessage(const FString& Message)
 {
 	WB_Chat->AddChatMessage(Message);
+}
+
+void UUW_GameMain::SetPlayerMissionClear(int nMissionClear)
+{
+	WB_UserMission->SetPlayerMissionClear(nMissionClear);
+}
+
+void UUW_GameMain::PlayerKillingMissionAppear()
+{
+	WB_UserMission->PlayerKillingMissionAppear();
+}
+
+void UUW_GameMain::SetPlayerKillingPoint(int nKillingPoint)
+{
+	WB_UserMission->SetPlayerKillingPoint(nKillingPoint);
 }

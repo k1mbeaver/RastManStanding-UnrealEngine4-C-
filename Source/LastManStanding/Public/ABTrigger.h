@@ -13,5 +13,7 @@ UCLASS()
 class LASTMANSTANDING_API AABTrigger : public ATriggerBox
 {
 	GENERATED_BODY()
-	
+
+		UFUNCTION(BlueprintCallable)
+		void TriggerWithCharacter(AActor* TriggerCharacter);
 };

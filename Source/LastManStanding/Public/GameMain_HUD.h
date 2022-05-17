@@ -21,6 +21,9 @@ public:
 public:
 	TSharedPtr<class SWidget> GetChatInputTextObject();
 	void AddChatMessage(const FString& Message);
+	void SetPlayerMissionClear(int nMissionClear);
+	void PlayerKillingMissionAppear();
+	void SetPlayerKillingPoint(int nKillingPoint);
 
 private:
 	TSubclassOf<class UUW_GameMain> MainUIClass;

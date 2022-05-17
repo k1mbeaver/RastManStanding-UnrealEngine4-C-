@@ -56,3 +56,18 @@ bool AGameMain_HUD::CreateUIObject()
 	}
 	return false; // 못 만들었다면 false.
 }
+
+void AGameMain_HUD::SetPlayerMissionClear(int nMissionClear)
+{
+	MainUIObject->SetPlayerMissionClear(nMissionClear);
+}
+
+void AGameMain_HUD::PlayerKillingMissionAppear()
+{
+	MainUIObject->PlayerKillingMissionAppear();
+}
+
+void AGameMain_HUD::SetPlayerKillingPoint(int nKillingPoint)
+{
+	MainUIObject->SetPlayerKillingPoint(nKillingPoint);
+}

@@ -17,8 +17,14 @@ class LASTMANSTANDING_API UUW_GameMain : public UUserWidget
 public:
 	TSharedPtr<class SWidget> GetChatInputTextObject();
 	void AddChatMessage(const FString& Message);
+	void SetPlayerMissionClear(int nMissionClear);
+	void PlayerKillingMissionAppear();
+	void SetPlayerKillingPoint(int nKillingPoint);
 
 private:
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_Chat* WB_Chat;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UUW_Mission* WB_UserMission;
 };

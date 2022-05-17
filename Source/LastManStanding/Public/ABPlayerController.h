@@ -34,6 +34,13 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 		class APawn* myPawn;
 
+	UPROPERTY()
+		bool bMissionClear = false;
+
+	void SetPlayerMissionClear(int nMissionClear);
+	void PlayerKillingMissionAppear();
+	void SetPlayerKillingPoint(int nKillingPoint);
+
 	//float testkey = 0;
 
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
@@ -56,6 +63,7 @@ private:
 	//void LookUp(float NewAxisValue);
 	//void Turn(float NewAxisValue);
 	void Jump();
+	void CheckMission();
 
 	// 달리기 함수
 
