@@ -71,3 +71,13 @@ void AGameMain_HUD::SetPlayerKillingPoint(int nKillingPoint)
 {
 	MainUIObject->SetPlayerKillingPoint(nKillingPoint);
 }
+
+void AGameMain_HUD::SetWinnerName(const FString& WinnerName)
+{
+	MainUIObject->SetWinnerName(WinnerName);
+}
+
+void AGameMain_HUD::VisibleGameover()
+{
+	MainUIObject->VisibleGameover();
+}

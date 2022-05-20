@@ -3,6 +3,7 @@
 
 #include "UW_StartMenu.h"
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
 #include "Title_PC.h"
 
 void UUW_StartMenu::ShowUpAnim()

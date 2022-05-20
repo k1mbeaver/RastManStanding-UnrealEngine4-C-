@@ -20,8 +20,13 @@ public:
 	void SetPlayerMissionClear(int nMissionClear);
 	void PlayerKillingMissionAppear();
 	void SetPlayerKillingPoint(int nKillingPoint);
+	void SetWinnerName(const FString& WinnerName);
+	void VisibleGameover();
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+		class UUW_Gameover* WB_GameOver;
+
 	UPROPERTY(Meta = (BindWidget))
 		class UUW_Chat* WB_Chat;
 

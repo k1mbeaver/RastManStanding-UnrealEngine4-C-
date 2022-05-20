@@ -44,6 +44,19 @@ public:
 	void PlayerKillingMissionAppear();
 	void SetPlayerKillingPoint(int nKillingPoint);
 
+	// ∞‘¿” ≥°
+
+	UFUNCTION(Server, Unreliable)
+		void CtoS_GameEnd(const FString& WinnerName);
+
+	UFUNCTION(Client, Unreliable)
+		void StoC_GameEnd(const FString& WinnerName);
+
+	void GameEnd(const FString& WinnerName);
+
+	void SetWinnerName(const FString& WinnerName);
+	void VisibleGameover();
+
 	//float testkey = 0;
 
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)

@@ -6,6 +6,7 @@
 #include "ABAnimInstance.h"
 #include "ABCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "ABGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AABPlayerController::AABPlayerController()
@@ -219,18 +220,17 @@ void AABPlayerController::StoC_StopRun_Implementation(AABCharacter* ClientCharac
 void AABPlayerController::SendMessage(const FText& Text)
 {
 	// GameInstance에 저장해두었던 내 닉네임.
-	// 게시글로는 안 적었다. 이거까지 설명하진 않겠다.
-	//UMyGameInstance* MyGI = GetGameInstance<UMyGameInstance>(); // GameInstance를 직접 만들어서 사용
-	//if (MyGI) 나중에 GameInstance 만들어서 json 적용한 다음 사용하자
-//   {
-		//FString UserName = MyGI->GetUserName(); 이것도
-		//FString Message = FString::Printf(TEXT("%s : %s"), *UserName, *Text.ToString());
+	UABGameInstance* MyGI = GetGameInstance<UABGameInstance>(); // GameInstance를 직접 만들어서 사용
+	if (MyGI) 
+   {
+		FString UserName = MyGI->GetUserName("Player");
+		FString Message = FString::Printf(TEXT("%s : %s"), *UserName, *Text.ToString());
 
-		//CtoS_SendMessage(Message); // 서버에서 실행될 수 있도록 보낸다.
-//   }
-	FString Message = FString::Printf(TEXT("%s"), *Text.ToString());
+		CtoS_SendMessage(Message); // 서버에서 실행될 수 있도록 보낸다.
+   }
+	//FString Message = FString::Printf(TEXT("%s"), *Text.ToString());
 
-	CtoS_SendMessage(Message); // 서버에서 실행될 수 있도록 보낸다.
+	//CtoS_SendMessage(Message); // 서버에서 실행될 수 있도록 보낸다.
 }
 
 void AABPlayerController::FocusChatInputText()
@@ -270,6 +270,52 @@ void AABPlayerController::SetPlayerKillingPoint(int nKillingPoint)
 	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
 	if (HUD == nullptr) return;
 	HUD->SetPlayerKillingPoint(nKillingPoint);
+}
+
+// 게임 끝
+
+void AABPlayerController::SetWinnerName(const FString& WinnerName)
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+	HUD->SetWinnerName(WinnerName);
+}
+
+void AABPlayerController::VisibleGameover()
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+	if (HUD == nullptr) return;
+	HUD->VisibleGameover();
+}
+
+void AABPlayerController::CtoS_GameEnd_Implementation(const FString& WinnerName)
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_GameEnd(WinnerName);
+		}
+	}
+}
+
+void AABPlayerController::StoC_GameEnd_Implementation(const FString& WinnerName)
+{
+	AGameMain_HUD* HUD = GetHUD<AGameMain_HUD>();
+
+	if (HUD == nullptr) return;
+
+	HUD->SetWinnerName(WinnerName);
+	HUD->VisibleGameover();
+}
+
+void AABPlayerController::GameEnd(const FString& WinnerName)
+{
+	CtoS_GameEnd(WinnerName);
 }
 
 // 채팅(서버)
@@ -318,6 +364,16 @@ void AABPlayerController::Attack()
 		// 여기서 Killing Point 세자
 		SetPlayerKillingPoint(myCharacter->nKillingCharacter);
 
+		// 05/20 현재 문제 생겨서 주석처리
+		/*
+		if (myCharacter->nKillingCharacter > 9)
+		{
+			UABGameInstance* MyGI = GetGameInstance<UABGameInstance>(); // GameInstance를 직접 만들어서 사용
+			FString UserName = MyGI->GetUserName("Player");
+
+			GameEnd(UserName);
+		}
+		*/
 		CtoS_Attack(myCharacter, playPunch);
 		//MyStopRun.Broadcast();
 	}

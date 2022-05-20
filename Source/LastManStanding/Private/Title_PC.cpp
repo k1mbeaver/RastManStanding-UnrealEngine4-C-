@@ -3,7 +3,9 @@
 
 #include "Title_PC.h"
 #include "UW_Title.h"
+#include "ABGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "ABGameInstance.h"
 
 ATitle_PC::ATitle_PC()
 {
@@ -35,10 +37,20 @@ void ATitle_PC::BeginPlay()
 
 void ATitle_PC::CreateServer()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName("ThirdPersonExampleMap"), true, ((FString)("Listen")));
+	// 여기서 CreateServer 하면 서버:0(클라이언트), 1(서버) 값을 1로 설정
+	UABGameInstance* MyGI = GetGameInstance<UABGameInstance>();
+	MyGI->SetIsServer("Player", 1);
+	//UGameplayStatics::OpenLevel(GetWorld(), FName("ThirdPersonExampleMap"), true, ((FString)("Listen")));
+	//UGameplayStatics::OpenLevel(GetWorld(), FName("ReadyRoom"), true, ((FString)("Listen")));
+	UGameplayStatics::OpenLevel(GetWorld(), FName("ReadyRoom"));
 }
 
 void ATitle_PC::JoinServer()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName("203.232.193.171")); // Level 이름 대신 IP 주소
+	// 여기서 JoinServer 하면 서버:0(클라이언트), 1(서버) 값을 0로 설정
+	UABGameInstance* MyGI = GetGameInstance<UABGameInstance>();
+	MyGI->SetIsServer("Player", 0);
+
+	//UGameplayStatics::OpenLevel(GetWorld(), FName(TitleUIObject->GetIp())); // Level 이름 대신 IP 주소
+	UGameplayStatics::OpenLevel(GetWorld(), FName("ReadyRoom"));
 }
