@@ -311,6 +311,7 @@ void AABPlayerController::StoC_GameEnd_Implementation(const FString& WinnerName)
 
 	HUD->SetWinnerName(WinnerName);
 	HUD->VisibleGameover();
+	SetShowMouseCursor(true);
 }
 
 void AABPlayerController::GameEnd(const FString& WinnerName)
@@ -363,18 +364,18 @@ void AABPlayerController::Attack()
 
 		// 여기서 Killing Point 세자
 		SetPlayerKillingPoint(myCharacter->nKillingCharacter);
+		
+		CtoS_Attack(myCharacter, playPunch);
 
 		// 05/20 현재 문제 생겨서 주석처리
-		/*
-		if (myCharacter->nKillingCharacter > 9)
+
+		if (myCharacter->nKillingCharacter == 10)
 		{
 			UABGameInstance* MyGI = GetGameInstance<UABGameInstance>(); // GameInstance를 직접 만들어서 사용
 			FString UserName = MyGI->GetUserName("Player");
 
 			GameEnd(UserName);
 		}
-		*/
-		CtoS_Attack(myCharacter, playPunch);
 		//MyStopRun.Broadcast();
 	}
 }

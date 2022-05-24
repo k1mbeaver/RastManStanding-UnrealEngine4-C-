@@ -10,7 +10,7 @@ void UUW_Gameover::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	PlayerNickName = Cast<UTextBlock>(GetWidgetFromName(TEXT("Mission")));
+	PlayerNickName = Cast<UTextBlock>(GetWidgetFromName(TEXT("PlayerNickName")));
 }
 
 void UUW_Gameover::SetWinnerName(const FString& WinnerName)
