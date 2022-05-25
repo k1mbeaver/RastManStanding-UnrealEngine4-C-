@@ -116,4 +116,16 @@ private:
 		void StoC_Attack(AABCharacter* ClientCharacter, UAnimMontage* playPunch);
 
 	void Attack();
+
+	// 서버 플레이어 확인함수 OnPossess에서 사용하자, 그리고 공격할 때 체크하는걸로?
+
+	/*
+	UFUNCTION(Server, Reliable)
+		void CtoS_PlayerEnter();
+
+	UFUNCTION(Client, Reliable)
+		void StoC_PlayerEnter();
+
+	void PlayerEnter();
+	*/
 };
