@@ -104,6 +104,9 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = HiddenMision)
 		int nNowPlayer; // 현재 플레이어 수 (사용할 때는 nNowPlayer - 1)
 
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = HiddenMision)
+		bool PunchTrue; // 현재 플레이어 수 (사용할 때는 nNowPlayer - 1)
+
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UABAnimInstance* ABAnim;

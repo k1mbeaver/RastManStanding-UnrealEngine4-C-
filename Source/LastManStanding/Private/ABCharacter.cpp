@@ -52,8 +52,9 @@ AABCharacter::AABCharacter()
 	AttackPower = 100.0f;
 	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
 	nMissionClear = 0; // 현재 미션 클리어는 0
-	nNowPlayer = 1; // 서버의 경우에만 정상적으로 증가
+	nNowPlayer = 0; // 서버의 경우에만 정상적으로 증가
 	nPlayerKill = 0;
+	PunchTrue = false;
 	//DeathCharacter = NULL; // 일단 죽은 캐릭터는 없다는 
 
 	AIControllerClass = AABAIController::StaticClass();
@@ -259,6 +260,7 @@ void AABCharacter::AttackCheck()
 			//AABCharacter* DeadCharacter = Cast<AABCharacter>(HitResult.Actor);
 			FDamageEvent DamageEvent;
 			HitResult.Actor->TakeDamage(AttackPower, DamageEvent, GetController(), this);
+			PunchTrue = true;
 
 			if (nMissionClear > 0)
 			{
@@ -430,6 +432,12 @@ void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	// 어택 변수를 다시 false로 변환한다.
 	ABCHECK(IsAttacking);
 	IsAttacking = false;
+
+	if (PunchTrue == true)
+	{
+		nKillingCharacter++;
+		PunchTrue = false;
+	}
 }
 
 void AABCharacter::CharacterDead(AABCharacter* DeadCharacter)

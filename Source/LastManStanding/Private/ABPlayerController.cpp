@@ -25,7 +25,46 @@ void AABPlayerController::OnPossess(APawn* aPawn)
 	myPawn = aPawn;
 	myCharacter = Cast<AABCharacter>(myPawn);
 
+	PlayerEnter();
+
 }
+
+void AABPlayerController::PlayerEnter()
+{
+	CtoS_PlayerEnter();
+}
+
+void AABPlayerController::CtoS_PlayerEnter_Implementation()
+{
+	TArray<AActor*> OutActors;
+	int PlayerCount = 0;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		PlayerCount++;
+	}
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_PlayerEnter(PlayerCount);
+		}
+	}
+}
+
+void AABPlayerController::StoC_PlayerEnter_Implementation(int PlayerCount)
+{
+	if (myCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+	myCharacter->nNowPlayer = PlayerCount;
+	FString testPlayerCount = FString::FromInt(myCharacter->nNowPlayer);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, testPlayerCount);
+}
+
+
 
 void AABPlayerController::BeginPlay()
 {
@@ -351,6 +390,9 @@ void AABPlayerController::Attack()
 {
 	//APawn* const myPawn = GetPawn();
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
+	// 공격 중이면 다시 공격못하게함
+	if (myCharacter->IsAttacking) return;
+
 	if (myCharacter->CurrentState == ECharacterState::READY)
 	{
 		if (myCharacter == nullptr) return;
