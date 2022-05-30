@@ -52,9 +52,10 @@ AABCharacter::AABCharacter()
 	AttackPower = 100.0f;
 	fSprintSpeedMultiPlayer = 3.0f; // 처음은 3.0, 미션수행시 2.5 2.0 1.5 단계로 줄어듬 
 	nMissionClear = 0; // 현재 미션 클리어는 0
-	nNowPlayer = 0; // 서버의 경우에만 정상적으로 증가
 	nPlayerKill = 0;
 	PunchTrue = false;
+	IsControlledPlayer = false;
+	nNowPlayer = 0;
 	//DeathCharacter = NULL; // 일단 죽은 캐릭터는 없다는 
 
 	AIControllerClass = AABAIController::StaticClass();
@@ -70,10 +71,10 @@ void AABCharacter::PostInitializeComponents()
 	ABCHECK(nullptr != ABAnim);
 
 	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
-	auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	ABCHECK(nullptr != AnimInstance);
+	//auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	//ABCHECK(nullptr != AnimInstance);
 
-	AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+	//AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
 
 	//ABAnim->OnAttackHitCheck.AddUObject(this, &AABCharacter::AttackCheck);
 	ABAnim->OnOnCollisonStart_Punch.AddUObject(this, &AABCharacter::AttackCheck);
@@ -128,6 +129,11 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AABCharacter::UpDown(float NewAxisValue)
 {
+	//if (IsControlledPlayer == false)
+	//{
+	//	CtoS_MultiIsPlayer();
+	//}
+
 	if (CurrentState == ECharacterState::READY)
 	{
 		FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X);
@@ -139,6 +145,11 @@ void AABCharacter::UpDown(float NewAxisValue)
 
 void AABCharacter::LeftRight(float NewAxisValue)
 {
+	//if (IsControlledPlayer == false)
+	//{
+		//CtoS_MultiIsPlayer();
+	//}
+
 	if (CurrentState == ECharacterState::READY)
 	{
 		FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y);
@@ -150,6 +161,11 @@ void AABCharacter::LeftRight(float NewAxisValue)
 
 void AABCharacter::LookUp(float NewAxisValue)
 {
+	//if (IsControlledPlayer == false)
+	//{
+		//CtoS_MultiIsPlayer();
+	//}
+
 	if (CurrentState == ECharacterState::READY)
 	{
 		AddControllerPitchInput(NewAxisValue);
@@ -163,6 +179,12 @@ void AABCharacter::LookUp(float NewAxisValue)
 
 void AABCharacter::Turn(float NewAxisValue)
 {
+	/*
+	if (IsControlledPlayer == false)
+	{
+		CtoS_MultiIsPlayer();
+	}
+	*/
 	if (CurrentState == ECharacterState::READY)
 	{
 		AddControllerYawInput(NewAxisValue);
@@ -262,10 +284,6 @@ void AABCharacter::AttackCheck()
 			HitResult.Actor->TakeDamage(AttackPower, DamageEvent, GetController(), this);
 			PunchTrue = true;
 
-			if (nMissionClear > 0)
-			{
-				nKillingCharacter += 1;
-			}
 			//CtoS_AttackCheck(DeathCharacter);
 			//MultiAttackCheck(HitResult, AttackPower, DamageEvent, GetController(), this);
 			//CharacterDead(DeadCharacter);
@@ -330,7 +348,6 @@ void AABCharacter::MultiAttackCheck_Implementation(AABCharacter* DeathCharacter,
 
 	if (DeathCharacter->bIsPlayer)
 	{
-		AABPlayerController* DeathMultiPlayer = Cast<AABPlayerController>(DeathCharacter);
 		//DeathCharacter->GetMesh()->DetachFromParent(true); // 여기서 메쉬는 가만히 있고 나머지는 움직이게함
 		//DeathCharacter->GetMesh()->SetSkeletalMesh(NULL);
 		//DeathCharacter->DisableInput(DeathMultiPlayer);
@@ -433,9 +450,10 @@ void AABCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	ABCHECK(IsAttacking);
 	IsAttacking = false;
 
+	// 캐릭터에 펀치가 맞았을 때
 	if (PunchTrue == true)
 	{
-		nKillingCharacter++;
+		if (nMissionClear > 0) nKillingCharacter++;
 		PunchTrue = false;
 	}
 }
@@ -475,21 +493,62 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 	case ECharacterState::DEAD:
 	{
 		SetActorEnableCollision(false);
-		if (bIsPlayer)
+		if (IsControlledPlayer == true)
 		{
-			//GetMesh()->DetachFromComponent(); // 여기서 메쉬는 가만히 있고 나머지는 움직이게함 true는 메쉬가 보이게 할건지말건지
-			//GetMesh()->SetSkeletalMesh(NULL);
-			//DisableInput(ABPlayerController); // 나중에 플레이어 사망시 자유시점카메라 변환 
+			//CtoS_PlayerDeadCheck();
 		}
 
 		else
 		{
 			ABAIController->StopAI();
 		}
+		MyCharacterDead.Broadcast();
 		break;
 	}
 	}
 }
+
+/*
+void AABCharacter::CtoS_PlayerDeadCheck_Implementation()
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_PlayerDeadCheck();
+		}
+	}
+}
+
+void AABCharacter::StoC_PlayerDeadCheck_Implementation()
+{
+	nPlayerKill++; // 모든 플레이어 캐릭터의 nPlayerKill 변수를 증가시킨다.
+}
+
+void AABCharacter::CtoS_MultiIsPlayer_Implementation()
+{
+	// 서버에서는 모든 PlayerController에게 이벤트를 보낸다.
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_MultiIsPlayer();
+		}
+	}
+}
+
+void AABCharacter::StoC_MultiIsPlayer_Implementation()
+{
+	IsControlledPlayer = true; 
+}
+*/
 
 ECharacterState AABCharacter::GetCharacterState() const
 {
@@ -524,8 +583,9 @@ void AABCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AABCharacter, AttackPower);
 	DOREPLIFETIME(AABCharacter, bIsPlayer);
 	DOREPLIFETIME(AABCharacter, nMissionClear);
-	DOREPLIFETIME(AABCharacter, nNowPlayer);
 	DOREPLIFETIME(AABCharacter, nPlayerKill);
+	DOREPLIFETIME(AABCharacter, nNowPlayer);
+	DOREPLIFETIME(AABCharacter, IsControlledPlayer);
 	//DOREPLIFETIME(AABCharacter, ABAnim);AttackPower
 
 }

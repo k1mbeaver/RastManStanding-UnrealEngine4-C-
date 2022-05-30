@@ -7,7 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "ABCharacter.generated.h"
 
-//DECLARE_MULTICAST_DELEGATE(FMyAttack_Delegate); // 공격 알림
+DECLARE_MULTICAST_DELEGATE(FMyCharacterDead_Delegate); // 공격 알림
 //DECLARE_MULTICAST_DELEGATE(FMyTakeDamage_Delegate); // 데미지 알림
 //DECLARE_MULTICAST_DELEGATE(FMyRun_Delegate); // 달리기 알림
 //DECLARE_MULTICAST_DELEGATE(FMyStopRun_Delegate); // 달리기 멈춤 알림
@@ -59,6 +59,18 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		//void MultiAttackCheck(FHitResult myHitResult);
 		void MultiAttackCheck(AABCharacter* DeathCharacter, AController* DeathPlayer); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
+
+	//UFUNCTION(Server, Reliable)
+		//void CtoS_PlayerDeadCheck(); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
+
+	//UFUNCTION(Client, Reliable)
+	//	void StoC_PlayerDeadCheck(); // 캐릭터와 플레이어인경우 플레이어 컨트롤러도 받아온다.
+
+	//UFUNCTION(Server, Reliable)
+	//	void CtoS_MultiIsPlayer();
+
+	//UFUNCTION(Client, Reliable)
+	//	void StoC_MultiIsPlayer(); 
 /*
 	UFUNCTION(Server, Reliable)
 		//void MultiAttackCheck(FHitResult myHitResult);
@@ -102,10 +114,13 @@ public:
 		int nPlayerKill; // 플레이어를 죽인 수
 
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = HiddenMision)
-		int nNowPlayer; // 현재 플레이어 수 (사용할 때는 nNowPlayer - 1)
+		bool PunchTrue; // 현재 플레이어 수 
+
+	UPROPERTY(VisibleInstanceOnly, Replicated, Category = ControledByPlayer)
+		bool IsControlledPlayer; // 현재 플레이어 수 
 
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = HiddenMision)
-		bool PunchTrue; // 현재 플레이어 수 (사용할 때는 nNowPlayer - 1)
+		int nNowPlayer = 0; // 현재 플레이어 수 (사용할 때는 nNowPlayer - 1)
 
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
@@ -117,7 +132,7 @@ public:
 	UPROPERTY(Transient, Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 		ECharacterState CurrentState;
 
-	//FMyAttack_Delegate MyAttack;
+	FMyCharacterDead_Delegate MyCharacterDead;
 	//FMyTakeDamage_Delegate MyTakeDamage;
 	//FMyRun_Delegate MyRun;
 	//FMyStopRun_Delegate MyStopRun;

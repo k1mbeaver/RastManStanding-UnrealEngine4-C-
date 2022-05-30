@@ -24,6 +24,7 @@ void AABPlayerController::OnPossess(APawn* aPawn)
 	Super::OnPossess(aPawn);
 	myPawn = aPawn;
 	myCharacter = Cast<AABCharacter>(myPawn);
+	myCharacter->MyCharacterDead.AddUObject(this, &AABPlayerController::PlayerKill); // 내 캐릭터가 죽었다는 델리게이트 함수가 발생하면?
 
 	PlayerEnter();
 
@@ -41,14 +42,19 @@ void AABPlayerController::CtoS_PlayerEnter_Implementation()
 	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
 	for (AActor* OutActor : OutActors)
 	{
-		PlayerCount++;
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			++PlayerCount;
+		}
 	}
+	myCharacter->nNowPlayer = PlayerCount;
 	for (AActor* OutActor : OutActors)
 	{
 		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
 		if (PC)
 		{
-			PC->StoC_PlayerEnter(PlayerCount);
+			PC->StoC_PlayerEnter(myCharacter->nNowPlayer);
 		}
 	}
 }
@@ -64,6 +70,39 @@ void AABPlayerController::StoC_PlayerEnter_Implementation(int PlayerCount)
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, testPlayerCount);
 }
 
+void AABPlayerController::PlayerKill()
+{
+	CtoS_PlayerKill(); // 클라이언트에서 호출하고 서버에서 실행하는 함수
+}
+
+void AABPlayerController::CtoS_PlayerKill_Implementation()
+{
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(GetPawn()->GetWorld(), APlayerController::StaticClass(), OutActors);
+	myCharacter->nPlayerKill++;
+	for (AActor* OutActor : OutActors)
+	{
+		AABPlayerController* PC = Cast<AABPlayerController>(OutActor);
+		if (PC)
+		{
+			PC->StoC_PlayerKill(myCharacter->nPlayerKill); // 서버에서는 모든 클라이언트들에게 이 함수를 실행하라고한다.
+		}
+	}
+}
+
+void AABPlayerController::StoC_PlayerKill_Implementation(int nPlayerKill)
+{
+	if (myCharacter == NULL) // 캐릭터에 빙의되지 않은 경우에는 실행하지 않게하자.
+	{
+		return;
+	}
+	myCharacter->nPlayerKill = nPlayerKill;
+	FString testPlayerCount = FString::FromInt(myCharacter->nPlayerKill);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, testPlayerCount);
+}
+
+
+
 
 
 void AABPlayerController::BeginPlay()
@@ -73,6 +112,20 @@ void AABPlayerController::BeginPlay()
 	SetShowMouseCursor(false);
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);
+}
+
+void AABPlayerController::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	// 여기서 Killing Point 세자
+	SetPlayerKillingPoint(myCharacter->nKillingCharacter);
+
+	if (myCharacter->nKillingCharacter == 10 || myCharacter->nPlayerKill == myCharacter->nNowPlayer - 1)
+	{
+		UABGameInstance* MyGI = GetGameInstance<UABGameInstance>(); // GameInstance를 직접 만들어서 사용
+		FString UserName = MyGI->GetUserName("Player");
+
+		GameEnd(UserName);
+	}
 }
 
 
@@ -391,6 +444,12 @@ void AABPlayerController::Attack()
 	//APawn* const myPawn = GetPawn();
 	//AABCharacter* myCharacter = Cast<AABCharacter>(myPawn);
 	// 공격 중이면 다시 공격못하게함
+
+	if (bCanDeligate == false)
+	{
+		myCharacter->ABAnim->OnMontageEnded.AddDynamic(this, &AABPlayerController::OnAttackMontageEnded);
+		bCanDeligate = true;
+	}
 	if (myCharacter->IsAttacking) return;
 
 	if (myCharacter->CurrentState == ECharacterState::READY)
@@ -403,21 +462,11 @@ void AABPlayerController::Attack()
 		myCharacter->AttackPower = 100.0f;
 		myCharacter->ABAnim->PlayAttackMontage(playPunch);
 		myCharacter->IsAttacking = true;
-
-		// 여기서 Killing Point 세자
-		SetPlayerKillingPoint(myCharacter->nKillingCharacter);
 		
 		CtoS_Attack(myCharacter, playPunch);
 
-		// 05/20 현재 문제 생겨서 주석처리
-
-		if (myCharacter->nKillingCharacter == 10)
-		{
-			UABGameInstance* MyGI = GetGameInstance<UABGameInstance>(); // GameInstance를 직접 만들어서 사용
-			FString UserName = MyGI->GetUserName("Player");
-
-			GameEnd(UserName);
-		}
+		FString testPlayerCount = FString::FromInt(myCharacter->nNowPlayer);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, testPlayerCount);
 		//MyStopRun.Broadcast();
 	}
 }

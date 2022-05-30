@@ -29,8 +29,12 @@ public:
 	UFUNCTION()
 		void FocusGame();
 
+	UFUNCTION()
+		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted); // 펀치가 끝났을 때 사용할 거
+
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 		class AABCharacter* myCharacter;
+
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 		class APawn* myPawn;
 
@@ -39,6 +43,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, Replicated)
 		bool bCanRun = true;
+
+	UPROPERTY()
+		bool bCanDeligate = false;
 
 	void SetPlayerMissionClear(int nMissionClear);
 	void PlayerKillingMissionAppear();
@@ -126,5 +133,15 @@ private:
 		void StoC_PlayerEnter(int PlayerCount);
 
 	void PlayerEnter();
+
+	// 캐릭터가 죽었는 지 확인하는 함수
+
+	UFUNCTION(Server, Reliable)
+		void CtoS_PlayerKill();
+
+	UFUNCTION(Client, Reliable)
+		void StoC_PlayerKill(int nPlayerKill);
+
+	void PlayerKill();
 	
 };

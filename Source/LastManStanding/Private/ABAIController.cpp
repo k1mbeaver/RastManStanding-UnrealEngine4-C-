@@ -52,5 +52,10 @@ void AABAIController::RunAI()
 
 void AABAIController::StopAI()
 {
+	if (this == nullptr) // 서버, 클라이언트 할때는 이거 해줘야하나?
+	{
+		return;
+	}
+
 	BTAsset_Component->StopTree(EBTStopMode::Safe);
 }
